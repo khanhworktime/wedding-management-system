@@ -1,0 +1,13 @@
+.customButton{
+  display: flex;
+  gap: .5rem;
+  &.default{
+    padding: 1.25rem;
+    color: #fff;
+  }
+  img{
+    aspect-ratio: 1 / 1;
+    height: 100%!important;
+    width: auto!important;
+  }
+}
