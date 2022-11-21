@@ -47,7 +47,7 @@ function Register() {
                 </div>
             </div>
             <div className={styles.coverImg}>
-                <img alt={"Nhà hàng tiệc cưới Asiana Plaza"} src={img.thumb.cover}/>
+                <img alt={"Nhà hàng tiệc cưới Asiana Plaza"} src={img.thumb.mainCover}/>
             </div>
         </div>
     );

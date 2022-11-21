@@ -14,6 +14,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-variant-numeric: lining-nums;
+  transition: all .2s ease-in-out;
 }
 
 code {
@@ -42,5 +43,11 @@ button{
     background-color: #fff;
     color: #000;
     border: 1px solid #8A8886;
+  }
+
+  &.btn-borderless{
+    border: none;
+    color: #000;
+    background-color: transparent;
   }
 }
