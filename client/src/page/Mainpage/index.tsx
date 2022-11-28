@@ -1,30 +1,18 @@
 import React from 'react';
 import styles from './styles.module.scss'
 import {logo, icon, thumb} from "../../asset/imgGetter";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ButtonIcon from "../../components/ButtonIcon";
 import TempFooter from "../../components/TempFooter";
+import Navbar from "../../components/Navbar";
 
 function Mainpage() {
+
+    const navigate = useNavigate();
+
     return (
         <div className={styles.page}>
-            <nav className={styles.nav}>
-                <div className={styles.brand}>
-                    <img src={logo.asiana} alt={"Asiana Plaza"}/>
-                </div>
-                <ul className={styles.navItems}>
-                    <li className={styles.item}><Link to={""}>Giới thiệu</Link></li>
-                    <li className={styles.item}><Link to={""}>Đặt tiệc ngay</Link></li>
-                    <li className={styles.item}><Link to={""}>Sảnh</Link></li>
-                    <li className={styles.item}><Link to={""}>Menu</Link></li>
-                    <li className={styles.item}><Link to={""}>Dịch vụ</Link></li>
-                    <li className={styles.item}><Link to={""}>Liên hệ</Link></li>
-                </ul>
-                <div className={styles.navFunciton}>
-                    <button className="btn-borderless mr-2">Đăng nhập</button>
-                    <button>Đăng kí</button>
-                </div>
-            </nav>
+            <Navbar/>
 
             <div className={styles.pageSection}>
                 <section className="mb-20 flex justify-between items-center" >
@@ -34,7 +22,7 @@ function Mainpage() {
                     </header>
                     <article className={styles.description}>
                         <p className="mb-4">Với kinh nghiệm phong phú trong tổ chức và vận hành tiệc cưới, chúng tôi cam kết mang lại cho bạn những sự lựa chọn phù hợp nhất. Để ngày cưới là ngày nhớ mãi trong đời. </p>
-                        <ButtonIcon icon={icon.arrowForward}>Đặt tiệc ngay</ButtonIcon>
+                        <ButtonIcon icon={icon.arrowForward} onClick={()=>navigate("/booking", {replace:false})}>Đặt tiệc ngay</ButtonIcon>
                     </article>
                 </section>
                 <section className={"w-full mb-16 " + styles.cover}>
