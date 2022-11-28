@@ -9,7 +9,7 @@ const  jwt = require('jsonwebtoken')
 // @desc Register user
 // @access Public
 router.post('/register', async (req, res)=>{
-    const {username, password} = req.body
+    const {username, password, role} = req.body
 
     // Simple validation
     if (!username || !password)
@@ -29,7 +29,7 @@ router.post('/register', async (req, res)=>{
 
         // Return token
         const  accessToken = jwt.sign({userId: newUser._id}, process.env.ACCESS_TOKEN_SECRET )
-        res.json({sucess:true, message:'User created successfully', accessToken})
+        res.json({success:true, message:'User created successfully', accessToken})
     }catch (error){
         console.log(error)
         res.status(500).json({success: false, message:'Internal server error'})
@@ -61,7 +61,7 @@ router.post('/login', async(req, res) =>{
         //All good
         // Return token
         const  accessToken = jwt.sign({userId: user._id}, process.env.ACCESS_TOKEN_SECRET )
-        res.json({sucess:true, message:'User logged in successfully', accessToken})
+        res.json({success:true, message:'User logged in successfully', accessToken})
 
     }catch (error){
         console.log(error)
@@ -70,5 +70,38 @@ router.post('/login', async(req, res) =>{
 
 
 } )
+
+// @route POST api/auth/admin/login
+// @desc adminLogin user
+// @access Public
+
+router.post('/admin/login', async(req, res) =>{
+    const  {username, password} = req.body
+
+    // Simple validation
+    if (!username || !password)
+        return res.status(400).json({success: false, message:'Missing username or password'})
+
+    try{
+        //Check for existing user
+        const  user = await  User.findOne({username})
+        if(!user)
+            return  res.status(400).json({success: false, message:'Incorrect username or password'})
+
+        //Username found
+        const passwordValid = await  argon2.verify(user.password, password)
+        if(!passwordValid)
+            return res.status(400).json({success: false, message:'Incorrect username or password'})
+
+        //All good
+        // Return token
+        const  accessToken = jwt.sign({userId: user._id}, process.env.ACCESS_TOKEN_SECRET )
+        res.json({success:true, message:'User logged in successfully', accessToken})
+
+    }catch (error){
+        console.log(error)
+        res.status(500).json({success: false, message:'Internal server error'})
+    }
+})
 
 module.exports = router

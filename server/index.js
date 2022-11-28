@@ -1,8 +1,12 @@
 require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 
 const  authRouter = require('./routes/auth')
+const  loungeRouter = require('./routes/lounge')
+const  dishRouter = require('./routes/dish')
+// const  menuRouter = require('./routes/menu')
 const connectDB = async () => {
     try {
         await mongoose.connect(
@@ -19,9 +23,13 @@ const connectDB = async () => {
 connectDB()
 
 const app = express()
+app.use(cors())
 app.use(express.json())
-
 app.use('/api/auth', authRouter)
+app.use('/api/lounges', loungeRouter)
+app.use('/api/dishs', dishRouter)
+// app.use('/api/menus', menuRouter)
+
 
 const PORT = 5000
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const UserSchema = new Schema({
+const CustomerSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -31,9 +31,9 @@ const UserSchema = new Schema({
         type: String,
         enum: ['available','unavailable']
     },
-    role: {
-        type: String
+    party_ordered: {
+        type: Number
     }
 })
 
-module.exports = mongoose.model('users', UserSchema)
+module.exports = mongoose.model('customers', CustomerSchema)
