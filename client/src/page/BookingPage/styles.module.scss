@@ -1,0 +1,68 @@
+.page {
+  padding-inline: clamp(1rem, 10vw, 9.75rem);
+  background-color: #fff;
+  padding-bottom: 25rem;
+  padding-top: 1rem;
+  position: relative;
+
+  .header{
+    margin-top: 2.5rem;
+    width: fit-content;
+    .em{
+      font-weight: 600;
+      color: #8CBDD2;
+    }
+
+    h1{
+      font-weight: 600;
+      font-size: 48px;
+      line-height: 59px;
+      max-width: min(456px, 80vw);
+    }
+  }
+
+  h2 {
+    font-weight: 600;
+    font-size: 2rem;
+  }
+
+  form.booking{
+    h3{
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+
+    fieldset {
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+
+      .inputset {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .emSymbol {
+        font-weight: 500;
+        font-size: 4rem;
+      }
+
+      .resetBtn{
+        color: #000000;
+        background-color: transparent;
+        border: 1px solid #0078D4;
+      }
+    }
+  }
+
+  .cover{
+    img{
+      height: 70vh;
+      border-radius: 1rem;
+      transition: all .2s ease-in-out;
+      &:hover{
+        transform: translate(1rem, -1rem);
+        box-shadow: -15px 21px 27px 3px rgba(0, 0, 0, 0.25);;
+      }
+    }
+  }
+}
