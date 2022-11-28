@@ -1,0 +1,16 @@
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "minmin1234",
+  "password": "minmin"
+}
+
+###
+POST http://localhost:5000/api/auth/login
+Content-Type:  application/json
+
+{
+  "username": "minmin1234",
+  "password": "minmin"
+}
