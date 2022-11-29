@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './styles.module.scss';
 import img from '../../asset/imgGetter'
 import { useNavigate } from "react-router-dom";
+import login from '../../api/login'
 
 function Login() {
 
     const navigate = useNavigate()
+    const [account, setAccount] = useState({username: "", pwd: ""})
 
     return (
         <div className={styles.page + " flex"}>
@@ -18,16 +20,16 @@ function Login() {
                         <label>
                             Tài khoản
                         </label><br/>
-                        <input className={styles.input} type="text" placeholder="Nhập username"></input>
+                        <input onChange={(e)=>setAccount((prev)=>{return {...prev, username: e.target.value}})} className={styles.input} type="text" placeholder="Nhập username"/>
                     </fieldset>
                     <fieldset className={styles.inputSection}>
                         <label>
                             Mật khẩu
                         </label><br/>
-                        <input className={styles.input} type="password" placeholder="Nhập password"></input>
+                        <input onChange={(e)=>setAccount((prev)=>{return {...prev, pwd: e.target.value}})} className={styles.input} type="password" placeholder="Nhập password"/>
                     </fieldset>
 
-                    <button>Đăng nhập</button>
+                    <button onClick={(e)=>{e.preventDefault(); login(account)}}>Đăng nhập</button>
                 </form>
 
                 <div className={styles.footer}>

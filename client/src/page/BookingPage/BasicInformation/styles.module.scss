@@ -1,0 +1,33 @@
+
+  h2 {
+    font-weight: 600;
+    font-size: 2rem;
+  }
+
+  form.booking{
+    h3{
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+
+    fieldset {
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+
+      .inputset {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .emSymbol {
+        font-weight: 500;
+        font-size: 4rem;
+      }
+
+      .resetBtn{
+        color: #000000;
+        background-color: transparent;
+        border: 1px solid #0078D4;
+      }
+    }
+  }
