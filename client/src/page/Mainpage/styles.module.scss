@@ -1,0 +1,70 @@
+.page{
+  padding-inline: clamp(1rem, 10vw, 9.75rem);
+  background-color: #fff;
+  padding-bottom: 25rem;
+  padding-top: 1rem;
+  position: relative;
+
+
+
+  .pageSection{
+    width: 100%;
+    padding-top: 3.25rem;
+
+    .header{
+      width: fit-content;
+      .em{
+        font-weight: 600;
+        color: #8CBDD2;
+      }
+
+      h1{
+        font-weight: 600;
+        font-size: 48px;
+        line-height: 59px;
+        max-width: min(456px, 80vw);
+      }
+
+    }
+    .description{
+      p {
+        width: 450px;
+      }
+    }
+
+    .cover{
+      img{
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .intro{
+      header{
+        h1{
+          font-weight: 600;
+          font-size: 48px;
+          line-height: 59px;
+          max-width: min(456px, 80vw);
+        }
+      }
+
+      img {
+        aspect-ratio: 1 / 1;
+        width: 4.5rem;
+      }
+
+      article{
+        p{
+          width: 100%;
+        }
+        h1{
+          font-weight: 600;
+          font-size: 1.5rem;
+          line-height: 59px;
+          max-width: min(456px, 80vw);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+export const API_NAME = "https://ca30-14-161-49-244.ap.ngrok.io"
