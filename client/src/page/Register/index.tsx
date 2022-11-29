@@ -2,10 +2,13 @@ import React from 'react';
 import styles from './styles.module.scss';
 import img from '../../asset/imgGetter'
 import { useNavigate } from "react-router-dom";
+import {useState} from "react"
+import register from "../../api/register"
 
 function Register() {
 
     const navigate = useNavigate()
+    const [account, setAccount] = useState({username: "", pwd: "", repwd: ""})
 
     return (
         <div className={styles.page + " flex"}>
@@ -16,30 +19,36 @@ function Register() {
                     <h2 className={styles.h2}>Đăng ký tài khoản khách</h2>
                     <fieldset className={styles.inputSection}>
                         <label>
-                            Email
-                        </label><br/>
-                        <input className={styles.input} type="text" placeholder="Nhập email"></input>
-                    </fieldset>
-                    <fieldset className={styles.inputSection}>
-                        <label>
                             Tài khoản
                         </label><br/>
-                        <input className={styles.input} type="text" placeholder="Nhập username"></input>
+                        <input onChange={(e)=> setAccount((prev:any) => {return {...prev, username: e.target.value}})} className={styles.input} type="text" placeholder="Nhập username"></input>
                     </fieldset>
                     <fieldset className={styles.inputSection}>
                         <label>
                             Mật khẩu
                         </label><br/>
-                        <input className={styles.input} type="password" placeholder="Nhập password"></input>
+                        <input onChange={(e)=> setAccount((prev:any) => {return {...prev, pwd: e.target.value}})} className={styles.input} type="password" placeholder="Nhập password"></input>
                     </fieldset>
                     <fieldset className={styles.inputSection}>
                         <label>
                             Nhập lại mật khẩu
                         </label><br/>
-                        <input className={styles.input} type="password" placeholder="Nhập lại password"></input>
+                        <input onChange={(e)=> setAccount((prev:any) => {return {...prev, repwd: e.target.value}})} className={styles.input} type="password" placeholder="Nhập lại password"></input>
                     </fieldset>
 
-                    <button>Đăng ký</button>
+                    <button onClick={
+                        (e) => {
+                            e.preventDefault()
+                            const {pwd, repwd} = account;
+                            if (pwd !== repwd)
+                                return alert("Kiểm tra lại 2 lần mật khẩu")
+
+                            register({
+                                username: account.username,
+                                pwd: account.pwd
+                            })
+                        }
+                    }>Đăng ký</button>
                 </form>
 
                 <div className={styles.footer}>
