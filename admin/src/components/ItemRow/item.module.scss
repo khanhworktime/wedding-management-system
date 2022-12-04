@@ -1,0 +1,43 @@
+.itemRow{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    padding-inline: 1rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    
+    &:hover {
+        border: 1px solid #c3c3c3;
+    }
+}
+
+.status {
+    aspect-ratio: 1;
+    width: 35px;
+    border-radius: 4px;
+
+    &.cancel {
+        background-color: #CC2F2F;
+    }
+    &.pending{
+        background-color: #96FBB2;
+    }
+    &.complete{
+        background-color: #12BDE2;
+    }
+    &.progress{
+        background-color: #D68235;
+    }
+    &.default{
+        background-color: #D8E5ED;
+    }
+}
+
+.content {
+    white-space: nowrap;
+}

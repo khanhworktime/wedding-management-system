@@ -12,7 +12,6 @@ export default function login(props:propsType){
     })
     .then((res:any)=>{
         console.log(res);
-        
         localStorage.setItem("accessToken", res.data.accessToken)
     })
 }
