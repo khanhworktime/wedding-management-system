@@ -1,6 +1,13 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
+import store from "../../store";
+import {setPage} from "../../store/reducers/page";
 
-const Dashboard = () => {
+const Report = () => {
+
+    useLayoutEffect(()=>{
+        store.dispatch(setPage("report"))
+    })
+
     return (
         <div>
             Reports
@@ -8,4 +15,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default Report;

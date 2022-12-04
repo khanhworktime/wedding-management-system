@@ -1,11 +1,18 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import FakeChart from "../../components/Chart/fakeChart";
 import {BsBarChartLine, BsListUl, BsPlusSquare} from "react-icons/bs"
 import ItemRow from "../../components/ItemRow";
 import {useNavigate} from "react-router-dom";
+import store from "../../store";
+import {setPage} from "../../store/reducers/page";
 
 const Dashboard = () => {
     const navigate = useNavigate()
+
+    useLayoutEffect(()=>{
+        store.dispatch(setPage("dashboard"));
+    })
+
     return (
         <div className="flex flex-col gap-6">
             <div className="grid grid-cols-2 w-full gap-6">

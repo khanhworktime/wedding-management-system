@@ -1,9 +1,31 @@
-import React, {useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import Modal from "../../components/Modal";
 import {BsPlus} from "react-icons/bs";
+import store from "../../store";
+import {setPage} from "../../store/reducers/page";
+import {Button, Dropdown, Input} from "semantic-ui-react";
+
+const customerOpt = [
+    {
+        key: "customer01",
+        text: "Nguyen Van A",
+        value: "nva"
+    },{
+        key: "customer02",
+        text: "Nguyen Van B",
+        value: "nvb"
+    },{
+        key: "customer03",
+        text: "Nguyen Van C",
+        value: "nvc"
+    },
+]
 
 const SaleDeal = () => {
     const [openModal, setOpenModal] = useState(false);
+    useLayoutEffect(()=>{
+        store.dispatch(setPage("sale_deals"))
+    })
 
     return (
         <div className="bg-white p-6 rounded-md relative">
@@ -11,32 +33,32 @@ const SaleDeal = () => {
                 <h2 className="font-semibold mb-4">Thêm đơn mới</h2>
                 <form>
                     <fieldset className="flex flex-col gap-2 mb-4">
-                        <label>Tên khách hàng</label>
-                        <input type="text" className="bg-white border-slate-500 p-2 rounded-md border-2"/>
+                        <label>Chọn khách hàng</label>
+                        <Dropdown placeholder="Chọn khách hàng" options={customerOpt} selection fluid/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Số chứng chỉ công dân</label>
-                        <input type="text" className="bg-white border-slate-500 p-2 rounded-md border-2"/>
+                        <Input type="text"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Năm sinh</label>
-                        <input type="date" className="bg-white border-slate-500 p-2 rounded-md border-2"/>
+                        <Input type="date"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Email</label>
-                        <input type="text" className="bg-white border-slate-500 p-2 rounded-md border-2"/>
+                        <Input type="text"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Địa chỉ</label>
-                        <input type="text" className="bg-white border-slate-500 p-2 rounded-md border-2"/>
+                        <Input type="text"/>
                     </fieldset>
                     <fieldset className="flex flex-row gap-2 mb-4">
                         <label>Tạo tài khoản mới ?</label>
-                        <input type="checkbox"/>
+                        <Input type="checkbox"/>
                     </fieldset>
                     <div className="flex w-full gap-4 justify-end">
-                        <div onClick={()=>setOpenModal(false)} className="p-2 cursor-pointer rounded-md border-amber-600 border-2">Hủy</div>
-                        <div className="p-2 rounded-md bg-indigo-800 text-white cursor-pointer">Thêm mới</div>
+                        <Button onClick={()=>setOpenModal(false)} >Hủy</Button>
+                        <Button onClick={(e)=>e.preventDefault()} primary>Thêm mới</Button>
                     </div>
                 </form>
             </Modal>}
@@ -73,7 +95,7 @@ const SaleDeal = () => {
                     </table>
                 </div>
                 <div className="basis-1/3 h-full">
-                    Detail section
+                    <h3 className="text-xl font-semibold">Chi tiết</h3>
                 </div>
             </div>
         </div>

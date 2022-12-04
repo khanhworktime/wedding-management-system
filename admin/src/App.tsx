@@ -5,6 +5,7 @@ import Login from "./page/Login";
 import Page from "./page/Mainpage";
 import Dashboard from "./page/Dashboard";
 import {ToastContainer} from "react-toastify";
+import 'semantic-ui-css/semantic.min.css'
 
 function App() {
   return (

@@ -4,7 +4,7 @@ import {Route, Routes, useNavigate} from "react-router-dom";
 import Dashboard from "../Dashboard";
 import Report from "../Report";
 import CustomerInfo from "../CustomerInfo";
-import SaleDeal from "../SaleDeal";
+import SaleDeal from "../BookingRecord";
 import Contracts from "../Contracts";
 import DataUpdate from "../Admin/Data";
 import Promotion from "../Admin/Promotion";
