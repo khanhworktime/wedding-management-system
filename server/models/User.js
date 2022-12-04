@@ -32,7 +32,8 @@ const UserSchema = new Schema({
         enum: ['available','unavailable']
     },
     role: {
-        type: String
+        type: String,
+        enum: ['customer','admin', 'sale', 'accountant', 'controller', 'chef']
     }
 })
 

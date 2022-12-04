@@ -24,7 +24,7 @@ router.post('/register', async (req, res)=>{
 
         // All good
         const  hashedPassword = await argon2.hash(password)
-        const  newUser = new User({username, password: hashedPassword})
+        const  newUser = new User({username, password: hashedPassword, role : role ? role : 'customer'})
         await  newUser.save()
 
         // Return token
@@ -55,7 +55,7 @@ router.post('/login', async(req, res) =>{
 
         //Username found
         const passwordValid = await  argon2.verify(user.password, password)
-        if(!passwordValid)
+        if(!passwordValid || user.role !== 'customer')
             return res.status(400).json({success: false, message:'Incorrect username or password'})
 
         //All good
@@ -90,7 +90,7 @@ router.post('/admin/login', async(req, res) =>{
 
         //Username found
         const passwordValid = await  argon2.verify(user.password, password)
-        if(!passwordValid)
+        if(!passwordValid || user.role === 'customer')
             return res.status(400).json({success: false, message:'Incorrect username or password'})
 
         //All good
