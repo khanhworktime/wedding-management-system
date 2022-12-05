@@ -46,7 +46,7 @@ router.post('/', verifyToken, async (req, res) =>{
 // @desc Update lounge
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { price,description,state,capacity,name } = req.body
+    const { price,description,state,capacity,name, max_table, position } = req.body
 
     // Simple validation
     const user = await User.findOne({_id: req.userId})
@@ -58,12 +58,12 @@ router.put('/:id', verifyToken, async (req, res) => {
         let updatedLounge = {
             price,
             description: description || '',
-            state: state || 'Available',
+            state: state || 'available',
             capacity,
-            name,
+            name, max_table, position
         }
 
-        const loungeUpdateCondition = { _id: req.params.id, user: req.userId }
+        const loungeUpdateCondition = {_id: req.params.id}
 
         updatedLounge = await Lounge.findOneAndUpdate(
             loungeUpdateCondition,
@@ -75,7 +75,7 @@ router.put('/:id', verifyToken, async (req, res) => {
         if (!updatedLounge)
             return res.status(401).json({
                 success: false,
-                message: 'Lounge not found or user not authorised'
+                message: 'Lounge not found'
             })
 
         res.json({

@@ -46,6 +46,31 @@ async function addLounge(lounge: ILounge) {
     return fetch.data.success
 }
 
+async function updateLounge(lounge: ILounge) {
+
+    const updateLounge = () => axios.put("/lounges/" + lounge._id, {...lounge}, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    const fetch = await toast.promise(updateLounge, {
+        pending: 'Đang xử lý...',
+        success: 'Đã cập nhật gòi á 👌',
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+
+    getAllLounge()
+
+    return fetch.data.success
+}
+
 async function deleteLounge(id: string) {
 
     const deleteLounge = () => axios.delete("/lounges/"+id, {
@@ -71,4 +96,4 @@ async function deleteLounge(id: string) {
     return fetch.data.success
 }
 
-export {getAllLounge, addLounge, deleteLounge};
+export {getAllLounge, addLounge, deleteLounge, updateLounge};
