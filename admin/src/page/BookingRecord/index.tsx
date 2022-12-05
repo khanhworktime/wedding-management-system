@@ -1,5 +1,5 @@
 import React, {useLayoutEffect, useState} from 'react';
-import Modal from "../../components/Modal";
+import Modal from "../../components/CustomModal";
 import {BsPlus} from "react-icons/bs";
 import store from "../../store";
 import {setPage} from "../../store/reducers/page";

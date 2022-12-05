@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Input, Tab} from 'semantic-ui-react'
 import {BsPlus} from "react-icons/bs";
-import Modal from "../../../components/Modal";
+import {Modal} from "semantic-ui-react";
+import CustomModal from "../../../components/CustomModal";
 import ILounge, {initLounge} from "../../../interface/ILounge";
-import {addLounge, getAllLounge} from "../../../api/lounge";
+import {addLounge, deleteLounge, getAllLounge} from "../../../api/lounge";
 import {useSelector} from "react-redux";
 import {loungesSelector} from "../../../store/reducers/lounge";
 import {toast} from "react-toastify";
@@ -23,10 +24,11 @@ const TabLounge = () => {
         errMsg: "Điền đầy đủ các trường thông tin !",
     })
 
+    const [confirmModal, setOpenConfirm] = useState({state: false, loungeId: ""})
+
     const formErrValidate = formErr.nameErr || formErr.capacityErr || formErr.tableErr || formErr.priceErr
 
     const formValidate = () => {
-        console.log(formErr)
         if (!formErr.error) {
             addLounge({
                 capacity: 0,
@@ -34,13 +36,25 @@ const TabLounge = () => {
                 name: "",
                 price: 0,
                 state: "unavailable", ...newLounge
-            }).then((res) => res.data.success && setOpenModal(false))
+            }).then((res) => {
+                if (res) setOpenModal(false)
+            })
         }
         else toast.error(formErr.errMsg);
     }
 
     return <Tab.Pane>
-        {openModal && <Modal showHandler={setOpenModal}>
+            <Modal size={"tiny"} open={confirmModal.state} onClose={()=>setOpenConfirm({state: false, loungeId: ""})}>
+                <Modal.Header>Xóa sảnh cưới ?</Modal.Header>
+                <Modal.Content>Sảnh sẽ được xóa !?</Modal.Content>
+                <Modal.Actions>
+                    <Button negative onClick={()=>setOpenConfirm({state: false, loungeId: ""})}>Không</Button>
+                    <Button positive onClick={()=> {
+                        deleteLounge(confirmModal.loungeId).then(r => setOpenConfirm({state: false, loungeId: ""})
+                    )}}>Xóa</Button>
+                </Modal.Actions>
+            </Modal>
+            {openModal && <CustomModal showHandler={setOpenModal}>
             <h2 className="font-semibold mb-4">Thêm sảnh mới</h2>
             <div>
                 <div className="flex flex-col gap-2 mb-4 required field">
@@ -105,7 +119,7 @@ const TabLounge = () => {
                     }} primary>Thêm mới</Button>
                 </div>
             </div>
-        </Modal>}
+        </CustomModal>}
         <h1 className="text-2xl font-bold mt-0">Các sảnh cưới</h1>
         <p className="mb-6">Hiện có : 0 sảnh cưới</p>
         <div onClick={() => setOpenModal(true)}
@@ -152,7 +166,7 @@ const TabLounge = () => {
                                     <td className="py-4 px-2">{lounge.capacity}</td>
                                     <td className="py-4 px-2">{lounge.max_table}</td>
                                     <td className="py-4 px-2">{lounge.state}</td>
-                                    <td className="py-4 px-2">Buttonx2</td>
+                                    <td className="py-4 px-2"><Button onClick={()=>setOpenConfirm({state: true, loungeId: lounge._id ? lounge._id : ""})} primary>Xóa</Button></td>
                                 </tr>
                             )
                         }))

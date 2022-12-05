@@ -36,7 +36,7 @@ async function addLounge(lounge: ILounge) {
         error: {
             render({data}){
                 // @ts-ignore
-                return data.message;
+                return data.response.data.message;
             }
         }
     })
@@ -46,4 +46,29 @@ async function addLounge(lounge: ILounge) {
     return fetch.data.success
 }
 
-export {getAllLounge, addLounge};
+async function deleteLounge(id: string) {
+
+    const deleteLounge = () => axios.delete("/lounges/"+id, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    const fetch = await toast.promise(deleteLounge, {
+        pending: 'Đang xử lý...',
+        success: 'Đã xóa xong ✔',
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+
+    getAllLounge()
+
+    return fetch.data.success
+}
+
+export {getAllLounge, addLounge, deleteLounge};

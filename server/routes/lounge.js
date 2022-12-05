@@ -100,14 +100,14 @@ router.delete('/:id', verifyToken, async (req, res) => {
     }
 
     try {
-        const loungeDeleteCondition = { _id: req.params.id, user: req.userId }
+        const loungeDeleteCondition = { _id: req.params.id }
         const deletedLounge = await Lounge.findOneAndDelete(loungeDeleteCondition)
 
         // User not authorised or lounge not found
         if (!deletedLounge)
             return res.status(401).json({
                 success: false,
-                message: 'Lounge not found or user not authorised'
+                message: 'Lounge not found'
             })
 
         res.json({ success: true, post: deletedLounge })

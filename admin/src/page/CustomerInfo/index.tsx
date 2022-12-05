@@ -1,6 +1,6 @@
 import React, {useLayoutEffect, useState} from 'react';
 import {BsPlus} from "react-icons/bs";
-import Modal from "../../components/Modal";
+import Modal from "../../components/CustomModal";
 import store from "../../store";
 import {setPage} from "../../store/reducers/page";
 import {Button, Input} from "semantic-ui-react";
