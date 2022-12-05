@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { BsArrowBarLeft } from "react-icons/bs";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import Dashboard from "../Dashboard";
@@ -17,6 +17,10 @@ const Page = () => {
     const activeClass = "cursor-pointer px-4 py-2 bg-indigo-800 text-white rounded-lg"
     const currentPage = useSelector(currentPageSellector)
     const navigate = useNavigate()
+
+    useEffect(()=>{
+        if (!localStorage.getItem("accessToken")) navigate("/login", {replace: true})
+    })
 
     return (
         <div className="bg-cyan-100 flex min-w-screen min-h-screen">

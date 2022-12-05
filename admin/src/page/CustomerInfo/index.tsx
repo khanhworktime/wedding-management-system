@@ -5,6 +5,8 @@ import store from "../../store";
 import {setPage} from "../../store/reducers/page";
 import {Button, Input} from "semantic-ui-react";
 
+//TODO: add new customer
+
 const CustomerInfo = () => {
 
     const [openModal, setOpenModal] = useState(false);

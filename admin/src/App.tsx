@@ -8,6 +8,7 @@ import {ToastContainer} from "react-toastify";
 import 'semantic-ui-css/semantic.min.css'
 
 function App() {
+    localStorage.clear();
   return (
       <div>
           <Routes>
