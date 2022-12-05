@@ -3,27 +3,27 @@ import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import axios from "axios";
 import {API_NAME} from './env'
-import ICustomer from "../interface/ICustomer";
 import store from "../store";
-import {setCustomers} from "../store/reducers/customer";
+import {setBookingRecord} from "../store/reducers/bookingRecord";
+import ILounge from "../interface/ILounge";
 
-function getAllCustomer() {
-    const getAll = () => axios.get("/customer", {
+function getAllLounge() {
+    const getAll = () => axios.get("/lounges", {
         baseURL: API_NAME.concat("/api")
     })
 
     getAll().then(res => {
-        store.dispatch(setCustomers(res.data));
+        store.dispatch(setBookingRecord(res.data));
     })
 }
 
-async function addNewCustomer(customer: ICustomer) {
+async function addLounge(lounge: ILounge) {
 
-    const addCustomer = () => axios.post("/customer", {...customer}, {
+    const addRecord = () => axios.post("/lounges", {...lounge}, {
         baseURL: API_NAME.concat("/api")
     })
 
-    await toast.promise(addCustomer, {
+    await toast.promise(addRecord, {
         pending: 'Đang xử lý...',
         success: 'Đã thêm gòi á 👌',
         error: {
@@ -34,7 +34,7 @@ async function addNewCustomer(customer: ICustomer) {
         }
     })
 
-    getAllCustomer()
+    getAllLounge()
 }
 
-export {addNewCustomer, getAllCustomer};
+export {getAllLounge, addLounge};

@@ -21,7 +21,7 @@ function getAllBookingRecord() {
 async function addBookingRecord(bookingRecord: IBookingRecord) {
 
     const addRecord = () => axios.post("/booking_record", {...bookingRecord}, {
-        baseURL: API_NAME
+        baseURL: API_NAME.concat("/api")
     })
 
     await toast.promise(addRecord, {
@@ -41,7 +41,7 @@ async function addBookingRecord(bookingRecord: IBookingRecord) {
 async function confirmBookingRecord(bookingRecord: IBookingRecord) {
 
     const addRecord = () => axios.patch("/booking_record",{...bookingRecord, confirmed: true}, {
-        baseURL: API_NAME,
+        baseURL: API_NAME.concat("/api"),
         params: {
             id: bookingRecord.id
         }
