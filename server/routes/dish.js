@@ -5,7 +5,7 @@ const verifyToken = require('../middleware/auth')
 const  Dish = require ('../models/Dish')
 
 // @route GET api/dishs
-// @desc Get dishs
+// @desc Get dish
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
@@ -19,8 +19,8 @@ router.get('/', verifyToken, async (req, res) => {
     }
 })
 
-//@route DISH api/Dish
-//@desc Create Dish
+//@route POST api/dishs
+//@desc Create dish
 //@access Private
 router.post('/', async (req,res) =>{
     const {description,state,name}= req.body

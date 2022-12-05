@@ -5,7 +5,7 @@ const verifyToken = require('../middleware/auth')
 const  Lounge = require ('../models/Lounge')
 
 // @route GET api/lounges
-// @desc Get lounges
+// @desc Get lounge
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
@@ -19,8 +19,8 @@ router.get('/', verifyToken, async (req, res) => {
     }
 })
 
-//@route LOUNGE api/Lounge
-//@desc Create Lounge
+//@route POST api/lounges
+//@desc Create lounge
 //@access Private
 router.post('/', async (req,res) =>{
     const {price,description,state,capacity,name}= req.body
