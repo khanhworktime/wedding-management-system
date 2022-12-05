@@ -44,7 +44,10 @@ const Page = () => {
                     <li onClick={()=> {navigate("promotion");dispatch(setPage("promotion"))}} className={currentPage === "promotion" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Khuyến mãi</li>
 
                 </ul>
-                <div onClick={()=>navigate("/login", {replace: true})} className="cursor-pointer px-4 py-2 hover:bg-indigo-50 rounded-lg absolute bottom-2 left-2"><BsArrowBarLeft/>Logout</div>
+                <div onClick={()=>{
+                    localStorage.removeItem("accessToken");
+                    navigate("/login", {replace: true})
+                }} className="cursor-pointer px-4 py-2 hover:bg-indigo-50 rounded-lg absolute bottom-2 left-2"><BsArrowBarLeft/>Logout</div>
             </div>
 
         {/* Page content */}

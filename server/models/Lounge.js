@@ -17,6 +17,12 @@ const LoungeSchema = new Schema({
     },
     name: {
         type: String
+    },
+    max_table: {
+        type: Number
+    },
+    position: {
+        type:String
     }
 })
 module.exports = mongoose.model('lounges', LoungeSchema)

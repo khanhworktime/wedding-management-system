@@ -8,10 +8,6 @@ const Login = () => {
     const [account, setAccount] = useState({username: "", password : ""})
     const navigator = useNavigate()
 
-    useEffect(()=>{
-        if (localStorage.getItem("accessToken")) navigator("/", {replace: true})
-    })
-
     function accountValidation(){
     //    POST request to login
         login({username: account.username, pwd: account.password})
