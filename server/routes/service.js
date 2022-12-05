@@ -3,15 +3,16 @@ const  router = express.Router()
 const verifyToken = require('../middleware/auth')
 
 const  User = require('../models/User')
-const  Lounge = require ('../models/Lounge')
 
-// @route GET api/lounges
-// @desc Get lounge
+const  Service = require ('../models/Service')
+
+// @route GET api/services
+// @desc Get services
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const lounges = await Lounge.find();
-        return res.json({ success: true, lounges })
+        const services = await Service.find();
+        return res.json({ success: true, services })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: 'Internal server error' })
@@ -22,19 +23,18 @@ router.get('/', verifyToken, async (req, res) => {
 //@desc Create lounge
 //@access Private
 router.post('/', verifyToken, async (req, res) =>{
-    const {price,description,state,capacity,name, max_table, position} = req.body
+    const {price,description,state,name, type} = req.body
     //Simple validation
     const user = await User.findOne({_id: req.userId})
-
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
 
     try{
-        const  newLounge = new Lounge({price,description,state: state || 'unavailable',capacity,name, max_table, position})
-        await newLounge.save()
+        const  newService = new Service({price,description, name, state: state || 'unavailable', type: type || "others"})
+        await newService.save()
 
-        return res.json ({success: true, message: 'Successfully,', post: newLounge})
+        return res.json ({success: true, message: 'Successfully,', service: newService})
     } catch (error){
         console.log(error)
         return res.status(500).json ({success: false, message: 'Internal server error'})
@@ -45,7 +45,7 @@ router.post('/', verifyToken, async (req, res) =>{
 // @desc Update lounge
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { price,description,state,capacity,name, max_table, position } = req.body
+    const {price,description,state,name, type} = req.body
 
     // Simple validation
     const user = await User.findOne({_id: req.userId})
@@ -54,33 +54,33 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
 
     try {
-        let updatedLounge = {
+        let updateService = {
             price,
             description: description || '',
-            state: state || 'available',
-            capacity,
-            name, max_table, position
+            state: state || 'unavailable',
+            type: type || 'others',
+            name,
         }
 
-        const loungeUpdateCondition = {_id: req.params.id}
+        const serviceUpdateCond = {_id: req.params.id}
 
-        updatedLounge = await Lounge.findOneAndUpdate(
-            loungeUpdateCondition,
-            updatedLounge,
+        updateService = await Service.findOneAndUpdate(
+            serviceUpdateCond,
+            updateService,
             { new: true }
         )
 
         // User not authorised to update lounge or post not found
-        if (!updatedLounge)
+        if (!updateService)
             return res.status(401).json({
                 success: false,
-                message: 'Lounge not found'
+                message: 'Service not found'
             })
 
         res.json({
             success: true,
             message: 'Excellent progress!',
-            post: updatedLounge
+            post: updateService
         })
     } catch (error) {
         console.log(error)
@@ -88,8 +88,8 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
 })
 
-// @route DELETE api/lounges
-// @desc Delete lounge
+// @route DELETE api/services
+// @desc Delete service
 // @access Private
 router.delete('/:id', verifyToken, async (req, res) => {
 
@@ -99,21 +99,22 @@ router.delete('/:id', verifyToken, async (req, res) => {
     }
 
     try {
-        const loungeDeleteCondition = { _id: req.params.id }
-        const deletedLounge = await Lounge.findOneAndDelete(loungeDeleteCondition)
+        const serviceDeleteCond = { _id: req.params.id }
+        const deleteService = await Service.findOneAndDelete(serviceDeleteCond)
 
         // User not authorised or lounge not found
-        if (!deletedLounge)
+        if (!deleteService)
             return res.status(401).json({
                 success: false,
-                message: 'Lounge not found'
+                message: 'Service not found'
             })
 
-        res.json({ success: true, post: deletedLounge })
+        res.json({ success: true, post: deleteService })
     } catch (error) {
         console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
+
 
 module.exports = router

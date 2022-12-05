@@ -5,19 +5,19 @@ const verifyToken = require('../middleware/auth')
 const  Dish = require ('../models/Dish')
 const User = require("../models/User")
 
-// @route GET api/dishs
+// @route GET api/dishes
 // @desc Get dish
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const dishs = await Dish.find();
-        return res.json({ success: true, dishs })
+        const dishes = await Dish.find();
+        return res.json({ success: true, dishes })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
-//@route POST api/dishs
+//@route POST api/dishes
 //@desc Create dish
 //@access Private
 router.post('/', async (req,res) =>{
@@ -42,7 +42,7 @@ router.post('/', async (req,res) =>{
     }
 })
 
-// @route PUT api/dishs
+// @route PUT api/dishes
 // @desc Update dish
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
@@ -88,7 +88,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
 })
 
-// @route DELETE api/dishs
+// @route DELETE api/dishes
 // @desc Delete dish
 // @access Private
 router.delete('/:id', verifyToken, async (req, res) => {
