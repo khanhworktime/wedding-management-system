@@ -14,3 +14,20 @@ Content-Type:  application/json
   "username": "minmin1234",
   "password": "minmin"
 }
+
+###
+POST http://localhost:5000/api/lounges
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Mzg1MDYyZjMwZTY5ZjRiZTBjOWU3NWUiLCJpYXQiOjE2NzAxNjMwNzB9.Z1uPpCLpsiykNTiEB1SxMir3m3Gm7j81yrnLIWywHWo
+
+{
+  "price" : 20000,
+  "description" : "gon qua di",
+  "state" : "Available",
+  "capacity" : 2000,
+  "name" : "diamond"
+}
+
+
+
+
