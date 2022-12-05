@@ -5,7 +5,7 @@ const verifyToken = require('../middleware/auth')
 const  Menu = require ('../models/Menu')
 
 // @route GET api/menus
-// @desc Get menus
+// @desc Get menu
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
@@ -17,8 +17,8 @@ router.get('/', verifyToken, async (req, res) => {
     }
 })
 
-//@route MENU api/Menu
-//@desc Create Menu
+//@route POST api/menus
+//@desc Create menu
 //@access Private
 router.post('/', async (req,res) =>{
     const {price,description,state,name,dishes}= req.body
@@ -42,6 +42,7 @@ router.post('/', async (req,res) =>{
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
     const { price,description,state,name,dishes } = req.body
+    console.log(req.body)
 
     // Simple validation
 
@@ -51,7 +52,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             description: description || '',
             state: state || 'Available',
             name,
-            dishes,
+            dishes
         }
 
         const menuUpdateCondition = {_id: req.params.id, user: req.userId}
@@ -101,6 +102,5 @@ router.delete('/:id', verifyToken, async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
-
 
 module.exports = router

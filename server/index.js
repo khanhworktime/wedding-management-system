@@ -7,6 +7,7 @@ const  authRouter = require('./routes/auth')
 const  loungeRouter = require('./routes/lounge')
 const  dishRouter = require('./routes/dish')
 // const  menuRouter = require('./routes/menu')
+const  bookingRecordRouter = require('./routes/bookingRecord')
 const connectDB = async () => {
     try {
         await mongoose.connect(
@@ -29,7 +30,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/lounges', loungeRouter)
 app.use('/api/dishs', dishRouter)
 // app.use('/api/menus', menuRouter)
-
+app.use('/api/bookingrecords', bookingRecordRouter)
 
 const PORT = 5000
 
