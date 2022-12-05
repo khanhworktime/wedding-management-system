@@ -27,4 +27,6 @@ export default async function login(props: propsType) {
         }
     })
     if (fetch.data.success) localStorage.setItem("accessToken", fetch.data.accessToken)
+
+    return fetch.data.success;
 }

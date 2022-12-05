@@ -1,17 +1,23 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {fakeAdmin} from "./fakeLoginAccount";
 import {useNavigate} from "react-router-dom";
+import login from "../../api/login";
+import {resolveAny} from "dns";
 
 const Login = () => {
     const [account, setAccount] = useState({username: "", password : ""})
     const navigator = useNavigate()
 
+    useEffect(()=>{
+        if (localStorage.getItem("accessToken")) navigator("/", {replace: true})
+    })
+
     function accountValidation(){
     //    POST request to login
-        if (account.password.trim() === fakeAdmin.password && account.username.trim() === fakeAdmin.username){
-            console.log("OK")
-            navigator("/", {replace : true})
-        }
+        login({username: account.username, pwd: account.password})
+            .then((res) => {
+                if (res) navigator("/", {replace: true})
+            })
     }
     return (
         <div className="relative flex min-h-screen text-gray-800 antialiased flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12">

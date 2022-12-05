@@ -2,6 +2,8 @@ const  express = require('express')
 const  router = express.Router()
 const verifyToken = require('../middleware/auth')
 
+const  User = require('../models/User')
+
 const  Lounge = require ('../models/Lounge')
 
 // @route GET api/lounges
@@ -9,13 +11,11 @@ const  Lounge = require ('../models/Lounge')
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const lounges = await Lounge.find({ user: req.userId }).populate('user', [
-            'username'
-        ])
-        res.json({ success: true, lounges })
+        const lounges = await Lounge.find();
+        return res.json({ success: true, lounges })
     } catch (error) {
         console.log(error)
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        return res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
 
@@ -28,14 +28,19 @@ router.post('/', async (req,res) =>{
 
     //Simple validation
 
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
+
     try{
         const  newLounge = new Lounge({price,description,state: state || 'available',capacity,name})
         await newLounge.save()
 
-        res.json ({success: true, message: 'Successfully,', post: newLounge})
+        return res.json ({success: true, message: 'Successfully,', post: newLounge})
     } catch (error){
         console.log(error)
-        res.status(500).json ({success: false, message: 'Internal server error'})
+        return res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
 
@@ -46,7 +51,10 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { price,description,state,capacity,name } = req.body
 
     // Simple validation
-
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
 
     try {
         let updatedLounge = {
@@ -87,6 +95,12 @@ router.put('/:id', verifyToken, async (req, res) => {
 // @desc Delete lounge
 // @access Private
 router.delete('/:id', verifyToken, async (req, res) => {
+
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
+
     try {
         const loungeDeleteCondition = { _id: req.params.id, user: req.userId }
         const deletedLounge = await Lounge.findOneAndDelete(loungeDeleteCondition)

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Tab} from 'semantic-ui-react'
 
+//TODO: add tabs
 const panes = [
     { menuItem: 'Tab 1', render: () => <Tab.Pane>
 

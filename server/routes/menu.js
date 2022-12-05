@@ -9,9 +9,7 @@ const  Menu = require ('../models/Menu')
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const menus = await Menu.find({ user: req.userId }).populate('user', [
-            'username'
-        ])
+        const menus = await Menu.find()
         res.json({ success: true, menus })
     } catch (error) {
         console.log(error)

@@ -5,6 +5,8 @@ import store from "../../store";
 import {setPage} from "../../store/reducers/page";
 import {Button, Dropdown, Input} from "semantic-ui-react";
 
+//TODO: Config for new deal
+
 const customerOpt = [
     {
         key: "customer01",
