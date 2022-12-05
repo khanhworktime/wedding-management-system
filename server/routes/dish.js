@@ -3,22 +3,20 @@ const  router = express.Router()
 const verifyToken = require('../middleware/auth')
 
 const  Dish = require ('../models/Dish')
+const User = require("../models/User")
 
 // @route GET api/dishs
 // @desc Get dish
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const dishs = await Dish.find({ user: req.userId }).populate('user', [
-            'username'
-        ])
-        res.json({ success: true, dishs })
+        const dishs = await Dish.find();
+        return res.json({ success: true, dishs })
     } catch (error) {
         console.log(error)
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        return res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
-
 //@route POST api/dishs
 //@desc Create dish
 //@access Private
@@ -28,14 +26,19 @@ router.post('/', async (req,res) =>{
 
     //Simple validation
 
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
+
     try{
         const  newDish = new Dish({description,state: state || 'available',name})
         await newDish.save()
 
-        res.json ({success: true, message: 'Successfully,', post: newDish})
+        return  res.json ({success: true, message: 'Successfully,', post: newDish})
     } catch (error){
         console.log(error)
-        res.status(500).json ({success: false, message: 'Internal server error'})
+        return res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
 
@@ -46,11 +49,14 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { description,state,name } = req.body
 
     // Simple validation
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
 
 
     try {
         let updatedDish = {
-
             description: description || '',
             state: state || 'Available',
             name,
@@ -86,6 +92,10 @@ router.put('/:id', verifyToken, async (req, res) => {
 // @desc Delete dish
 // @access Private
 router.delete('/:id', verifyToken, async (req, res) => {
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
     try {
         const dishDeleteCondition = { _id: req.params.id, user: req.userId }
         const deletedDish= await Dish.findOneAndDelete(dishDeleteCondition)
@@ -103,6 +113,5 @@ router.delete('/:id', verifyToken, async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
-
 
 module.exports = router

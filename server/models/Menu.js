@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Dish = require("./Dish")
 const Schema = mongoose.Schema
 
 const MenuSchema = new Schema({
@@ -17,7 +16,7 @@ const MenuSchema = new Schema({
         type: String
     },
     dishes: {
-        type: [Dish]
+        type: ['Dish']
     }
 })
 module.exports = mongoose.model('menus', MenuSchema)

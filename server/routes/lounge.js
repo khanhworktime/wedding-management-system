@@ -22,19 +22,17 @@ router.get('/', verifyToken, async (req, res) => {
 //@route POST api/lounges
 //@desc Create lounge
 //@access Private
-router.post('/', async (req,res) =>{
-    const {price,description,state,capacity,name}= req.body
-    console.log(req.body)
-
+router.post('/', verifyToken, async (req, res) =>{
+    const {price,description,state,capacity,name, max_table, position} = req.body
     //Simple validation
-
     const user = await User.findOne({_id: req.userId})
+
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
 
     try{
-        const  newLounge = new Lounge({price,description,state: state || 'available',capacity,name})
+        const  newLounge = new Lounge({price,description,state: state || 'unavailable',capacity,name, max_table, position})
         await newLounge.save()
 
         return res.json ({success: true, message: 'Successfully,', post: newLounge})

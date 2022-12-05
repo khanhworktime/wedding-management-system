@@ -3,6 +3,7 @@ const  router = express.Router()
 const verifyToken = require('../middleware/auth')
 
 const  Menu = require ('../models/Menu')
+const User = require("../models/User")
 
 // @route GET api/menus
 // @desc Get menu
@@ -25,6 +26,10 @@ router.post('/', async (req,res) =>{
     console.log(req.body)
 
     //Simple validation
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
 
     try{
         const  newMenu = new Menu({price,description,state: state || 'available',name, dishes})
@@ -33,7 +38,7 @@ router.post('/', async (req,res) =>{
         res.json ({success: true, message: 'Successfully,', post: newMenu})
     } catch (error){
         console.log(error)
-        res.status(500).json ({success: false, message: 'Internal server error'})
+        return  res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
 
@@ -45,6 +50,10 @@ router.put('/:id', verifyToken, async (req, res) => {
     console.log(req.body)
 
     // Simple validation
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
 
     try {
         let updatedMenu = {
@@ -52,7 +61,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             description: description || '',
             state: state || 'Available',
             name,
-            dishes
+            dishes,
         }
 
         const menuUpdateCondition = {_id: req.params.id, user: req.userId}
@@ -85,6 +94,10 @@ router.put('/:id', verifyToken, async (req, res) => {
 // @desc Delete menu
 // @access Private
 router.delete('/:id', verifyToken, async (req, res) => {
+    const user = await User.findOne({_id: req.userId})
+    if (user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+    }
     try {
         const menuDeleteCondition = { _id: req.params.id, user: req.userId }
         const deletedMenu= await Menu.findOneAndDelete(menuDeleteCondition)
