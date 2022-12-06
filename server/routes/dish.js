@@ -32,7 +32,7 @@ router.post('/', async (req,res) =>{
     }
 
     try{
-        const  newDish = new Dish({description,state: state || 'available',name,price,type,order})
+        const  newDish = new Dish({description,state: state || 'unavailable',name,price,type,order})
         await newDish.save()
 
         return  res.json ({success: true, message: 'Successfully,', post: newDish})
@@ -65,7 +65,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             order
         }
 
-        const dishUpdateCondition = {_id: req.params.id, user: req.userId}
+        const dishUpdateCondition = {_id: req.params.id}
 
         updatedDish = await Dish.findOneAndUpdate(
             dishUpdateCondition,
@@ -100,14 +100,14 @@ router.delete('/:id', verifyToken, async (req, res) => {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
     try {
-        const dishDeleteCondition = { _id: req.params.id, user: req.userId }
+        const dishDeleteCondition = { _id: req.params.id }
         const deletedDish= await Dish.findOneAndDelete(dishDeleteCondition)
 
         // User not authorised or dish not found
         if (!deletedDish)
             return res.status(401).json({
                 success: false,
-                message: 'Dish not found or user not authorised'
+                message: 'Dish not found'
             })
 
         res.json({ success: true, post: deletedDish })
