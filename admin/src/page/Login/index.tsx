@@ -11,9 +11,8 @@ const Login = () => {
     function accountValidation(){
     //    POST request to login
         login({username: account.username, pwd: account.password})
-            .then((res) => {
-                console.log(res);
-                if (res) navigator("/", {replace: true})
+            .then(() => {
+                navigator("/", {replace: true})
             })
     }
     return (

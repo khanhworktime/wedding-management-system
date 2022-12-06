@@ -13,7 +13,10 @@ export default async function login(props: propsType) {
     const {username, pwd} = props
 
     const loginAPI = () => axios.post("/admin/login", {username: props.username, password: props.pwd}, {
-        baseURL: API_NAME.concat("/api/auth")
+        baseURL: API_NAME.concat("/api/auth"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+        }
     })
 
     const fetch = await toast.promise(loginAPI, {
@@ -26,7 +29,8 @@ export default async function login(props: propsType) {
             }
         }
     })
-    if (fetch.data.success) localStorage.setItem("accessToken", fetch.data.accessToken)
-
-    return fetch.data.success;
+    if (fetch.data.success) {
+        localStorage.setItem("accessToken", fetch.data.accessToken)
+        return fetch.data.success;
+    }
 }

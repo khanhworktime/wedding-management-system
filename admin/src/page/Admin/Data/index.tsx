@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Dropdown, Input, Tab, Transition} from 'semantic-ui-react'
+import {Button, Dropdown, Icon, Input, Label, Tab, Transition} from 'semantic-ui-react'
 import {BsPlus} from "react-icons/bs";
-import {Modal} from "semantic-ui-react";
+import {Modal, Accordion} from "semantic-ui-react";
 import CustomModal from "../../../components/CustomModal";
 import ILounge, {initLounge} from "../../../interface/ILounge";
 import {addLounge, deleteLounge, getAllLounge, updateLounge} from "../../../api/lounge";
@@ -50,7 +50,7 @@ const TabLounge = () => {
                     if (res) setOpenModal(false)
                 })
             }
-
+            chooseLounge(initLounge);
         }
         else toast.error(formErr.errMsg);
     }
@@ -166,7 +166,7 @@ const TabLounge = () => {
                 <table className="w-full table-auto h-fit border-collapse relative">
                     <thead>
                     <tr>
-                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Mã
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white max-w-[100px] break-all whitespace-nowrap text-left">Mã
                             sảnh
                         </th>
                         <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Tên
@@ -190,8 +190,8 @@ const TabLounge = () => {
                     {
                         lounges.map(((lounge:ILounge, i: number) => {
                             return (
-                                <tr onClick={()=>{chooseLounge(lounge)}} key={`Lounge${i}`} className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
-                                    <td className="py-4 px-2 font-semibold">{lounge._id}</td>
+                                <tr onClick={()=>{chooseLounge(lounge)}} key={`Lounge${i}`} className={`hover:bg-cyan-200  transition-colors cursor-pointer ${lounge._id === currentLounge._id ? "bg-cyan-200" : ""}`}>
+                                    <td className="py-4 px-2 max-w-[100px] break-all font-semibold">{lounge._id}</td>
                                     <td className="py-4 px-2">{lounge.name}</td>
                                     <td className="py-4 px-2">{lounge.position ? lounge.position : ""}</td>
                                     <td className="py-4 px-2">{lounge.capacity}</td>
@@ -204,7 +204,7 @@ const TabLounge = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="basis-1/3 h-full">
+            <div className="basis-1/3 h-full overflow-y-scroll pl-2 pr-6">
                 <h3 className="text-xl font-semibold">Chi tiết</h3>
                 <h4 className="text-lg mt-0 font-semibold">Sảnh {currentLounge.name}</h4>
                 <p className="text-lg font-semibold">#{currentLounge._id}</p>
@@ -212,6 +212,7 @@ const TabLounge = () => {
                 <p><b>Sức chứa của sảnh</b> : {currentLounge.capacity} khách</p>
                 <p><b>Số lượng bàn tối đa</b> : {currentLounge.max_table}</p>
                 <p><b>Vị trí trong tòa nhà</b> : {currentLounge.position || ""}</p>
+                <p><b>Giá đặt sảnh</b> : {currentLounge.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ</p>
                 <p><b>Mô tả</b> : {currentLounge.description || ""}</p>
                 <p><b>Thao tác:</b></p>
                 <div className="flex flex-row gap-2">
@@ -234,6 +235,11 @@ const TabLounge = () => {
                                  onClick={()=>{updateLounge({...currentLounge,
                          state: "available"
                     }).then(()=>chooseLounge({}))}}>Kich hoạt</Button>}
+                    {currentLounge.state === "available" &&
+                         <Button color={"red"}
+                                 onClick={()=>{updateLounge({...currentLounge,
+                         state: "unavailable"
+                    }).then(()=>chooseLounge({}))}}>Dừng hoạt động</Button>}
                 </div>
             </div>
         </div>
@@ -265,7 +271,7 @@ const TabService = () => {
                     if (res) setOpenModal(false)
                 })
             }
-
+            chooseService(initService)
         }
         else toast.error(formErr.errMsg);
     }
@@ -369,7 +375,7 @@ const TabService = () => {
                 <table className="w-full table-auto h-fit border-collapse relative">
                     <thead>
                     <tr>
-                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Mã
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white max-w-[100px] break-all whitespace-nowrap text-left">Mã
                             dịch vụ
                         </th>
                         <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Tên
@@ -388,8 +394,8 @@ const TabService = () => {
                     {
                         services.map(((service:IService, i: number) => {
                             return (
-                                <tr onClick={()=>{chooseService(service)}} key={`Service${i}`} className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
-                                    <td className="py-4 px-2 font-semibold">{service._id}</td>
+                                <tr onClick={()=>{chooseService(service)}} key={`Service${i}`} className={`hover:bg-cyan-200  transition-colors cursor-pointer ${service._id === currentService._id ? "bg-cyan-200" : ""}`}>
+                                    <td className="py-4 px-2 max-w-[100px] break-all font-semibold">{service._id}</td>
                                     <td className="py-4 px-2">{service.name}</td>
                                     <td className="py-4 px-2">{serviceType(service.type)}</td>
                                     <td className="py-4 px-2">{service.price}</td>
@@ -401,12 +407,13 @@ const TabService = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="basis-1/3 h-full">
+            <div className="basis-1/3 h-full overflow-y-scroll pl-2 pr-6">
                 <h3 className="text-xl font-semibold">Chi tiết</h3>
                 <h4 className="text-lg mt-0 font-semibold">Dịch vụ {currentService.name}</h4>
                 <p className="text-lg font-semibold">#{currentService._id}</p>
                 <p><b>Trạng thái</b> : <StateConvert state={currentService.state || "unavailable"}/> </p>
                 <p><b>Loại dịch vụ</b> : {serviceType(currentService.type)}</p>
+                <p><b>Giá đặt dịch vụ</b> : {currentService.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ</p>
                 <p><b>Mô tả</b> : {currentService.description || ""}</p>
                 <p><b>Thao tác:</b></p>
                 <div className="flex flex-row gap-2">
@@ -419,6 +426,9 @@ const TabService = () => {
                     {currentService.state === "unavailable" && <Button color={"green"} onClick={()=>{updateService({...currentService,
                          state: "available"
                     }).then(()=>currentService({}))}}>Kich hoạt</Button>}
+                    {currentService.state === "available" && <Button color={"red"} onClick={()=>{updateService({...currentService,
+                         state: "unavailable"
+                    }).then(()=>currentService({}))}}>Dừng hoạt động</Button>}
                 </div>
             </div>
         </div>
@@ -430,11 +440,7 @@ const TabMenu = () => {
     const groups = useSelector(groupsSelector);
     const [newMenu, setNewMenu] = useState(initMenu);
     const [openModal, setOpenModal] = useState(false)
-    useEffect(()=>{
-        setNewMenu((prev:IMenu)=>{
-            return {...prev, price: menuTotal(newMenu)}
-        })
-    }, [])
+
     const [formErr, setErr] = useState({
         error: true,
         nameErr: true,
@@ -442,6 +448,8 @@ const TabMenu = () => {
     })
 
     const [confirmModal, setOpenConfirm] = useState({state: false, menuId: ""})
+
+    const [activeIndex, setActiveIndex] = useState(-1);
 
     const formErrValidate = formErr.nameErr
     const formValidate = () => {
@@ -455,7 +463,7 @@ const TabMenu = () => {
                     if (res) setOpenModal(false)
                 })
             }
-
+            chooseMenu(initMenu)
         }
         else toast.error(formErr.errMsg);
     }
@@ -503,13 +511,14 @@ const TabMenu = () => {
                 <div className="flex flex-col gap-2 mb-4">
                     <label>Các món Soup</label>
                     <Dropdown
+                        value={newMenu.soup?.map(item => item._id || null)}
                         onChange={
                             (e, data) => {
                                 setNewMenu((prev:any) => {
                                     const temp = data.value || "";
                                     // @ts-ignore
                                     const dishesMap = dishes.filter ((dish:IDish)=>temp.includes(dish._id))
-                                    return {...prev, soup: dishesMap};
+                                    return {...prev, soup: dishesMap, price: menuTotal({...prev, soup: dishesMap})};
                                 })
                             }}
                         placeholder="Chọn các món soup" options={menuGetAdapterGroup(groups.soup)} selection multiple fluid/>
@@ -517,13 +526,14 @@ const TabMenu = () => {
                 <div className="flex flex-col gap-2 mb-4">
                     <label>Các món Salad</label>
                     <Dropdown
+                        value={newMenu.salad?.map(item => item._id || null)}
                         onChange={
                             (e, data) => {
                                 setNewMenu((prev:any) => {
                                     const temp = data.value || "";
                                     // @ts-ignore
                                     const dishesMap = dishes.filter ((dish:IDish)=>temp.includes(dish._id))
-                                    return {...prev, salad: dishesMap};
+                                    return {...prev, salad: dishesMap, price: menuTotal({...prev, salad: dishesMap})};
                                 })
                             }}
                         placeholder="Chọn các món Salad" options={menuGetAdapterGroup(groups.salad)} selection multiple fluid/>
@@ -531,13 +541,14 @@ const TabMenu = () => {
                 <div className="flex flex-col gap-2 mb-4">
                     <label>Các món chính</label>
                     <Dropdown
+                        value={newMenu.main?.map(item => item._id || null)}
                         onChange={
                             (e, data) => {
                                 setNewMenu((prev:any) => {
                                     const temp = data.value || "";
                                     // @ts-ignore
                                     const dishesMap = dishes.filter ((dish:IDish)=>temp.includes(dish._id))
-                                    return {...prev, main: dishesMap};
+                                    return {...prev, main: dishesMap, price: menuTotal({...prev, main: dishesMap})};
                                 })
                             }}
                         placeholder="Chọn các món chính" options={menuGetAdapterGroup(groups.main)} selection multiple fluid/>
@@ -545,13 +556,15 @@ const TabMenu = () => {
                 <div className="flex flex-col gap-2 mb-4">
                     <label>Các món tráng miệng</label>
                     <Dropdown
+                        value={newMenu.dessert?.map(item => item._id || null)}
                         onChange={
                             (e, data) => {
                                 setNewMenu((prev:any) => {
                                     const temp = data.value || "";
                                     // @ts-ignore
                                     const dishesMap = dishes.filter ((dish:IDish)=>temp.includes(dish._id))
-                                    return {...prev, dessert: dishesMap};
+                                    console.log(dishesMap)
+                                    return {...prev, dessert: dishesMap, price: menuTotal({...prev, dessert: dishesMap})};
                                 })
                             }}
                         placeholder="Chọn các món tráng miệng" options={menuGetAdapterGroup(groups.dessert)} selection multiple fluid/>
@@ -559,13 +572,14 @@ const TabMenu = () => {
                 <div className="flex flex-col gap-2 mb-4">
                     <label>Các món khác</label>
                     <Dropdown
+                        value={newMenu.other?.map(item => item._id || null)}
                         onChange={
                             (e, data) => {
                                 setNewMenu((prev:any) => {
                                     const temp = data.value || "";
                                     // @ts-ignore
                                     const dishesMap = dishes.filter ((dish:IDish)=>temp.includes(dish._id))
-                                    return {...prev, other: dishesMap};
+                                    return {...prev, other: dishesMap, price: menuTotal({...prev, other: dishesMap})};
                                 })
                             }}
                         placeholder="Chọn các món khác" options={menuGetAdapterGroup(groups.other)} selection multiple fluid/>
@@ -609,7 +623,7 @@ const TabMenu = () => {
                 <table className="w-full table-auto h-fit border-collapse relative">
                     <thead>
                     <tr>
-                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Mã
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white max-w-[100px] break-all whitespace-nowrap text-left">Mã
                             Menu
                         </th>
                         <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Tên
@@ -626,8 +640,8 @@ const TabMenu = () => {
                     {
                         menus.map(((menu:IMenu, i: number) => {
                             return (
-                                <tr onClick={()=>{chooseMenu(menu)}} key={`Menu${i}`} className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
-                                    <td className="py-4 px-2 font-semibold">{menu._id}</td>
+                                <tr onClick={()=>{chooseMenu(menu)}} key={`Menu${i}`} className={`hover:bg-cyan-200  transition-colors cursor-pointer ${menu._id === currentMenu._id ? "bg-cyan-200" : ""}`}>
+                                    <td className="py-4 px-2 max-w-[100px] break-all font-semibold">{menu._id}</td>
                                     <td className="py-4 px-2">{menu.name}</td>
                                     <td className="py-4 px-2">{menu.price}</td>
                                     <td className="py-4 px-2"><StateConvert state={menu.state}/></td>
@@ -638,12 +652,83 @@ const TabMenu = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="basis-1/3 h-full">
+            <div className="basis-1/3 h-full overflow-y-scroll pl-2 pr-6 overflow-y-scroll pl-2 pr-6">
                 <h3 className="text-xl font-semibold">Chi tiết</h3>
                 <h4 className="text-lg mt-0 font-semibold">Menu {currentMenu.name}</h4>
                 <p className="text-lg font-semibold">#{currentMenu._id}</p>
                 <p><b>Trạng thái</b> : <StateConvert state={currentMenu.state || "unavailable"}/> </p>
+                <p><b>Giá menu</b> : {currentMenu.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ</p>
                 <p><b>Mô tả</b> : {currentMenu.description || ""}</p>
+                <p><b>Danh sách món ăn :</b></p>
+                <div className="mb-8">
+                    <Accordion fluid styled>
+                        {currentMenu.soup?.length > 0 && <Accordion.Title
+                            active={activeIndex === 0}
+                            index={0}
+                            onClick={() => setActiveIndex((prev) => prev === 0 ? -1 : 0)}
+                        >
+                            <Icon name='dropdown'/>
+                            Món Soup
+                        </Accordion.Title>}
+                        {currentMenu.soup?.length > 0 && <Accordion.Content active={activeIndex === 0}>
+                            <Label.Group color="blue">
+                                {currentMenu.soup?.map((item: any) => <Label>{item.name}</Label>)}
+                            </Label.Group>
+                        </Accordion.Content>}
+                        {currentMenu.salad?.length > 0 &&<Accordion.Title
+                            active={activeIndex === 1}
+                            index={1}
+                            onClick={() => setActiveIndex((prev) => prev === 1 ? -1 : 1)}
+                        >
+                            <Icon name='dropdown'/>
+                            Món Salad
+                        </Accordion.Title>}
+                        {currentMenu.salad?.length > 0 &&<Accordion.Content active={activeIndex === 1}>
+                            <Label.Group color="blue">
+                                {currentMenu.salad?.map((item: any) => <Label>{item.name}</Label>)}
+                            </Label.Group>
+                        </Accordion.Content>}
+                        {currentMenu.main?.length > 0 &&<Accordion.Title
+                            active={activeIndex === 2}
+                            index={2}
+                            onClick={() => setActiveIndex((prev) => prev === 2 ? -1 : 2)}
+                        >
+                            <Icon name='dropdown'/>
+                            Món chính
+                        </Accordion.Title>}
+                        {currentMenu.main?.length > 0 &&<Accordion.Content active={activeIndex === 2}>
+                            <Label.Group color="blue">
+                                {currentMenu.main?.map((item: any) => <Label>{item.name}</Label>)}
+                            </Label.Group>
+                        </Accordion.Content>}
+                        {currentMenu.dessert?.length > 0 &&<Accordion.Title
+                            active={activeIndex === 3}
+                            index={3}
+                            onClick={() => setActiveIndex((prev) => prev === 3 ? -1 : 3)}
+                        >
+                            <Icon name='dropdown'/>
+                            Món tráng miệng
+                        </Accordion.Title>}
+                        {currentMenu.dessert?.length > 0 &&<Accordion.Content active={activeIndex === 3}>
+                            <Label.Group color="blue">
+                                {currentMenu.dessert?.map((item: any) => <Label>{item.name}</Label>)}
+                            </Label.Group>
+                        </Accordion.Content>}
+                        {currentMenu.other?.length > 0 &&<Accordion.Title
+                            active={activeIndex === 4}
+                            index={4}
+                            onClick={() => setActiveIndex((prev) => prev === 4 ? -1 : 4)}
+                        >
+                            <Icon name='dropdown'/>
+                            Món khác
+                        </Accordion.Title>}
+                        {currentMenu.other?.length > 0 &&<Accordion.Content active={activeIndex === 4}>
+                            <Label.Group color="blue">
+                                {currentMenu.other?.map((item: any) => <Label>{item.name}</Label>)}
+                            </Label.Group>
+                        </Accordion.Content>}
+                    </Accordion>
+                </div>
                 <p><b>Thao tác:</b></p>
                 <div className="flex flex-row gap-2">
                     <Button primary onClick={()=>{
@@ -660,6 +745,9 @@ const TabMenu = () => {
                     {currentMenu.state === "unavailable" && <Button color={"green"} onClick={()=>{updateMenu({...currentMenu,
                          state: "available"
                     }).then(()=>currentMenu({}))}}>Kich hoạt</Button>}
+                    {currentMenu.state === "available" && <Button color={"red"} onClick={()=>{updateMenu({...currentMenu,
+                         state: "unavailable"
+                    }).then(()=>currentMenu({}))}}>Dừng hoạt động</Button>}
                 </div>
             </div>
         </div>
@@ -691,7 +779,7 @@ const TabDish = () => {
                     if (res) setOpenModal(false)
                 })
             }
-
+            chooseDish(initDish)
         }
         else toast.error(formErr.errMsg);
     }
@@ -807,7 +895,7 @@ const TabDish = () => {
                 <table className="w-full table-auto h-fit border-collapse relative">
                     <thead>
                     <tr>
-                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Mã món ăn
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white max-w-[100px] break-all whitespace-nowrap text-left">Mã món ăn
                         </th>
                         <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Tên
                             món ăn
@@ -825,8 +913,8 @@ const TabDish = () => {
                     {
                         dishes.map(((dish:IDish, i: number) => {
                             return (
-                                <tr onClick={()=>{chooseDish(dish)}} key={`Dish${i}`} className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
-                                    <td className="py-4 px-2 font-semibold">{dish._id}</td>
+                                <tr onClick={()=>{chooseDish(dish)}} key={`Dish${i}`} className={`hover:bg-cyan-200  transition-colors cursor-pointer ${dish._id === currentDish._id ? "bg-cyan-200" : ""}`}>
+                                    <td className="py-4 px-2 max-w-[100px] break-all font-semibold">{dish._id}</td>
                                     <td className="py-4 px-2">{dish.name}</td>
                                     <td className="py-4 px-2">{dish.type}</td>
                                     <td className="py-4 px-2">{dish.order}</td>
@@ -838,13 +926,13 @@ const TabDish = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="basis-1/3 h-full">
+            <div className="basis-1/3 h-full overflow-y-scroll pl-2 pr-6">
                 <h3 className="text-xl font-semibold">Chi tiết</h3>
                 <h4 className="text-lg mt-0 font-semibold">Món {currentDish.name}</h4>
                 <p className="text-lg font-semibold">#{currentDish._id}</p>
                 <p><b>Trạng thái</b> : <StateConvert state={currentDish.state || "unavailable"}/> </p>
                 <p><b>Loại món ăn</b> : {currentDish.type}</p>
-                <p><b>Đơn giá món ăn</b> : {currentDish.price}đ</p>
+                <p><b>Đơn giá món ăn</b> : {currentDish.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ</p>
                 <p><b>Thứ tự món trong thực đơn</b> : {currentDish.order}</p>
                 <p><b>Mô tả</b> : {currentDish.description || ""}</p>
                 <p><b>Thao tác:</b></p>
@@ -864,6 +952,9 @@ const TabDish = () => {
                     {currentDish.state === "unavailable" && <Button color={"green"} onClick={()=>{updateDish({...currentDish,
                          state: "available"
                     }).then(()=>currentDish({}))}}>Kich hoạt</Button>}
+                    {currentDish.state === "available" && <Button color={"red"} onClick={()=>{updateDish({...currentDish,
+                         state: "unavailable"
+                    }).then(()=>currentDish({}))}}>Dừng hoạt động</Button>}
                 </div>
             </div>
         </div>
@@ -880,8 +971,6 @@ const DataUpdate = () => {
         { menuItem: 'Món ăn', render: () => <TabDish/> },
         { menuItem: 'Dịch vụ', render: () => <TabService/> },
     ]
-
-
     return (
         <div>
             <Tab panes={panes}/>

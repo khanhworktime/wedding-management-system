@@ -12,12 +12,13 @@ function getAllLounge() {
     const getAll = () => axios.get("/lounges", {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
     getAll().then(res => {
-        store.dispatch(setLounge(res.data.lounges));
+        store.dispatch(setLounge(res.data.lounges || []));
     })
 }
 

@@ -9,7 +9,7 @@ interface IMenu {
     salad?: Array<any>,
     main?: Array<any>,
     dessert?: Array<any>,
-    orther?: Array<any>,
+    other?: Array<any>,
     name: string;
 }
 
@@ -21,7 +21,7 @@ const initMenu:IMenu = {
     salad: [],
     main: [],
     dessert: [],
-    orther: [],
+    other: [],
 }
 
 const menuGetAdapterGroup=(groups:any)=>{

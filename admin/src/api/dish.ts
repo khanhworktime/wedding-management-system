@@ -11,13 +11,13 @@ function getAllDishes() {
     const getAll = () => axios.get("/dishes", {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
     getAll().then(res => {
-        console.log(res)
-        store.dispatch(setDish(res.data.dishes));
+        store.dispatch(setDish(res.data.dishes || []));
     })
 }
 
@@ -26,6 +26,7 @@ async function addDish(dish: IDish) {
     const add = () => axios.post("/dishes", {...dish}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
@@ -51,6 +52,7 @@ async function updateDish(dish: IDish) {
     const update = () => axios.put("/dishes/" + dish._id, {...dish}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
@@ -76,6 +78,7 @@ async function deleteDish(id: string) {
     const deleteItem = () => axios.delete("/dishes/"+id, {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })

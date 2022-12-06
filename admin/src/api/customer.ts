@@ -9,7 +9,10 @@ import {setCustomers} from "../store/reducers/customer";
 
 function getAllCustomer() {
     const getAll = () => axios.get("/customer", {
-        baseURL: API_NAME.concat("/api")
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+        }
     })
 
     getAll().then(res => {
@@ -20,7 +23,10 @@ function getAllCustomer() {
 async function addNewCustomer(customer: ICustomer) {
 
     const addCustomer = () => axios.post("/customer", {...customer}, {
-        baseURL: API_NAME.concat("/api")
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+        }
     })
 
     await toast.promise(addCustomer, {

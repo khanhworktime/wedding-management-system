@@ -11,12 +11,14 @@ function getAllService() {
     const getAll = () => axios.get("/services", {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
     getAll().then(res => {
-        store.dispatch(setService(res.data.services));
+        console.log(res)
+        store.dispatch(setService(res.data.services || []));
     })
 }
 
@@ -25,6 +27,7 @@ async function addService(service: IService) {
     const addService = () => axios.post("/services", {...service}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
@@ -50,6 +53,7 @@ async function updateService(service: IService) {
     const updateService = () => axios.put("/services/" + service._id, {...service}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
@@ -75,6 +79,7 @@ async function deleteService(id: string) {
     const deleteService = () => axios.delete("/services/"+id, {
         baseURL: API_NAME.concat("/api"),
         headers: {
+            ['ngrok-skip-browser-warning']:"1",
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
