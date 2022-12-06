@@ -58,7 +58,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         let updatedDish = {
             description: description || '',
-            state: state || 'Available',
+            state: state || 'unavailable',
             name,
             price,
             type,
