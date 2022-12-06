@@ -19,22 +19,26 @@ router.get('/', verifyToken, async (req, res) => {
 //@route POST api/menus
 //@desc Create menu
 //@access Private
-router.post('/', async (req,res) =>{
-    const {description,state,name,soup, salad, main, dessert, other} = req.body
+router.post('/', verifyToken, async (req,res) =>{
+    const {description,state,name,soup, salad, main, dessert, other, price} = req.body
     //Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
 
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
     try{
-        const menuPrice = soup.reduce((sum, item) => sum + item.price, 0) + salad.reduce((sum, item) => sum + item.price, 0) + main.reduce((sum, item) => sum + item.price, 0) + other.reduce((sum, item) => sum + item.price, 0) + dessert.reduce((sum, item) => sum + item.price, 0)
+        const isExist = await Menu.findOne({name: name})
+        if(isExist) return res.status(406).json({success: false, message: 'Menu đã tồn tại ùi !'})
 
-        const newMenu = new Menu({price: menuPrice, description:description.trim(),state: state || 'available',name,soup, salad, main, dessert, other})
+        const newMenu = new Menu({price, description:description?.trim(),state: state || 'available',name: name?.trim(),soup, salad, main, dessert, other})
         await newMenu.save()
 
         res.json ({success: true, message: 'Successfully,', post: newMenu})
     } catch (error){
+        console.log(error)
         return  res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
@@ -48,6 +52,8 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     const isExist = await Menu.findOne({name: name, _id: {$ne: req.params.id}})
     if(isExist) return res.status(406).json({success: false, message: 'Menu đã tồn tại ùi !'})
@@ -55,9 +61,9 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         let updatedMenu = {
             price,
-            description: description || '',
+            description: description?.trim(),
             state: state || 'Available',
-            name,
+            name: name?.trim(),
             soup, salad, main, dessert, other
         }
 

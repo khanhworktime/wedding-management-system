@@ -29,10 +29,12 @@ router.post('/', verifyToken, async (req, res) =>{
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try{
 
-        const  newCustomer = new Lounge({address: address.trim(),state: state || 'unavailable',birthday,name: name.trim(), identify_number, party_ordered})
+        const  newCustomer = new Lounge({address: address?.trim(),state: state || 'unavailable',birthday,name: name?.trim(), identify_number, party_ordered})
         await newCustomer.save()
 
         return res.json ({success: true, message: 'Successfully,', customer:newCustomer})
@@ -54,6 +56,8 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try {
         const isExist = await Lounge.findOne({name: name, _id: {$ne: req.params.id}})
@@ -61,11 +65,11 @@ router.put('/:id', verifyToken, async (req, res) => {
 
         let updatedCustomer = {
 
-            address: address.trim(),
+            address: address?.trim(),
             birthday,
             identify_number,
             state: state || 'unavailable',
-            name: name.trim(),
+            name: name?.trim(),
             party_ordered
         }
 

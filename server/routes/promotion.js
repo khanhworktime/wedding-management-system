@@ -28,10 +28,12 @@ router.post('/', verifyToken, async (req, res) =>{
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try{
 
-        const  newPromotion = new Promotion({name: name.trim(),state: state || 'unavailable',start_at,end_at,description: description.trim(),discount_value,lounge_id,menu_id, service_id})
+        const  newPromotion = new Promotion({name: name?.trim(),state: state || 'unavailable',start_at,end_at,description: description?.trim(),discount_value,lounge_id,menu_id, service_id})
         await newPromotion.save()
 
         return res.json ({success: true, message: 'Successfully,', lounge: newPromotion})
@@ -51,13 +53,15 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try {
 
 
         let updatedPromotion = {
-            name, start_at, end_at,
-            description: description.trim(),
+            name: name?.trim(), start_at, end_at,
+            description: description?.trim(),
             state: state || 'unavailable',
             name: name.trim(),
             discount_value, lounge_id, service_id, menu_id

@@ -28,9 +28,11 @@ router.post('/', verifyToken, async (req,res) =>{
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try{
-        const  newDish = new Dish({description,state: state || 'unavailable',name,price,type,order})
+        const  newDish = new Dish({description: description?.trim(),state: state || 'unavailable',name: name?.trim(),price,type,order})
         await newDish.save()
 
         return  res.json ({success: true, message: 'Successfully,', dish: newDish})
@@ -50,13 +52,15 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
 
     try {
         let updatedDish = {
-            description: description || '',
+            description: description?.trim(),
             state: state || 'unavailable',
-            name,
+            name: name?.trim(),
             price,
             type,
             order
