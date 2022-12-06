@@ -1,4 +1,4 @@
-import IDish, {fakeDishes} from "./IDish";
+import IDish from "./IDish";
 
 interface IMenu {
     _id?: string;
