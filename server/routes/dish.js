@@ -20,7 +20,7 @@ router.get('/', verifyToken, async (req, res) => {
 //@route POST api/dishes
 //@desc Create dish
 //@access Private
-router.post('/', async (req,res) =>{
+router.post('/', verifyToken, async (req,res) =>{
     const {description,state,name,price,type,order}= req.body
     console.log(req.body)
 
@@ -100,7 +100,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
     try {
-        const dishDeleteCondition = { _id: req.params.id, user: req.userId }
+        const dishDeleteCondition = {_id: req.params.id}
         const deletedDish= await Dish.findOneAndDelete(dishDeleteCondition)
 
         // User not authorised or dish not found

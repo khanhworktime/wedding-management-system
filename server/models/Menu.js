@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const {DishSchema} = require('./Dish')
 
 const MenuSchema = new Schema({
     price:{
@@ -15,8 +16,20 @@ const MenuSchema = new Schema({
     name: {
         type: String
     },
-    dishes: {
-        type: ['Dish']
+    soup: {
+        type: [DishSchema]
+    },
+    salad: {
+        type: [DishSchema]
+    },
+    main: {
+        type: [DishSchema]
+    },
+    dessert: {
+        type: [DishSchema]
+    },
+    other: {
+        type: [DishSchema]
     }
 })
 module.exports = mongoose.model('menus', MenuSchema)

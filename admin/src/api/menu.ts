@@ -4,11 +4,12 @@ import "react-toastify/dist/ReactToastify.css"
 import axios from "axios";
 import {API_NAME} from './env'
 import store from "../store";
-import {setDish} from "../store/reducers/dish";
-import IDish from "../interface/IDish";
+import {setBookingRecord} from "../store/reducers/bookingRecord";
+import IMenu from "../interface/IMenu";
+import {setMenu} from "../store/reducers/menu";
 
-function getAllDishes() {
-    const getAll = () => axios.get("/dishes", {
+function getAllMenu() {
+    const getAll = () => axios.get("/menus", {
         baseURL: API_NAME.concat("/api"),
         headers: {
             authorization: "Bearer " + localStorage.getItem("accessToken")
@@ -16,21 +17,20 @@ function getAllDishes() {
     })
 
     getAll().then(res => {
-        console.log(res)
-        store.dispatch(setDish(res.data.dishes));
+        store.dispatch(setMenu(res.data.menus));
     })
 }
 
-async function addDish(dish: IDish) {
+async function addMenu(menu: IMenu) {
 
-    const add = () => axios.post("/dishes", {...dish}, {
+    const addRecord = () => axios.post("/menus", {...menu}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
-    const fetch = await toast.promise(add, {
+    const fetch = await toast.promise(addRecord, {
         pending: 'Đang xử lý...',
         success: 'Đã thêm gòi á 👌',
         error: {
@@ -41,21 +41,21 @@ async function addDish(dish: IDish) {
         }
     })
 
-    getAllDishes()
+    getAllMenu()
 
     return fetch.data.success
 }
 
-async function updateDish(dish: IDish) {
+async function updateMenu(menu: IMenu) {
 
-    const update = () => axios.put("/dishes/" + dish._id, {...dish}, {
+    const updateMenu = () => axios.put("/menus/" + menu._id, {...menu}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
-    const fetch = await toast.promise(update, {
+    const fetch = await toast.promise(updateMenu, {
         pending: 'Đang xử lý...',
         success: 'Đã cập nhật gòi á 👌',
         error: {
@@ -66,35 +66,34 @@ async function updateDish(dish: IDish) {
         }
     })
 
-    getAllDishes()
+    getAllMenu()
 
     return fetch.data.success
 }
 
-async function deleteDish(id: string) {
+async function deleteMenu(id: string) {
 
-    const deleteItem = () => axios.delete("/dishes/"+id, {
+    const deleteMenu = () => axios.delete("/menus/"+id, {
         baseURL: API_NAME.concat("/api"),
         headers: {
             authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
-    const fetch = await toast.promise(deleteItem, {
+    const fetch = await toast.promise(deleteMenu, {
         pending: 'Đang xử lý...',
         success: 'Đã xóa xong ✔',
         error: {
             render({data}){
-                console.log(data);
                 // @ts-ignore
                 return data.response.data.message;
             }
         }
     })
 
-    getAllDishes()
+    getAllMenu()
 
     return fetch.data.success
 }
 
-export {getAllDishes, addDish, deleteDish, updateDish};
+export {getAllMenu, addMenu, deleteMenu, updateMenu};

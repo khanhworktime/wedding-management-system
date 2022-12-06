@@ -4,8 +4,23 @@ interface IDish{
     state: "available" | "unavailable";
     name: string;
     price: number;
-    order: "Soup" | "Salad" | "Món chính" | "Tráng miệng" | "Khác";
-    type: "Món mặn" | "Món chay" | "Đồ ngọt" | "Lẩu" | "Khác";
+    order: "Soup" | "Salad" | "Món chính" | "Tráng miệng"  | "Khác";
+    type: "Món mặn" | "Món chay" | "Đồ ngọt" | "Lẩu" | "Đồ uống" | "Khác";
+}
+
+const orderConverter = (order:string) => {
+    switch (order) {
+        case "Soup":
+            return "soup";
+        case "Salad":
+            return "salad";
+        case "Món chính":
+            return "main";
+        case "Tráng miệng":
+            return "dessert";
+        case "Khác":
+            return "other";
+    }
 }
 
 const dishOrderAdapter = [
@@ -41,9 +56,12 @@ const dishTypeAdapter = [
         text: "Lẩu",
         value: "Lẩu"
     },{
+        text: "Đồ uống",
+        value: "Đồ uống"
+    },{
         text: "Khác",
         value: "Khác"
-    },
+    }
 ]
 
 
@@ -57,4 +75,4 @@ const initDish:IDish = {
 }
 
 export default  IDish;
-export {initDish, dishTypeAdapter, dishOrderAdapter}
+export {initDish, dishTypeAdapter, dishOrderAdapter, orderConverter}

@@ -13,7 +13,6 @@ router.get('/', verifyToken, async (req, res) => {
         const menus = await Menu.find()
         res.json({ success: true, menus })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
@@ -22,9 +21,7 @@ router.get('/', verifyToken, async (req, res) => {
 //@desc Create menu
 //@access Private
 router.post('/', async (req,res) =>{
-    const {price,description,state,name,dishes}= req.body
-    console.log(req.body)
-
+    const {description,state,name,soup, salad, main, dessert, other} = req.body
     //Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
@@ -32,7 +29,9 @@ router.post('/', async (req,res) =>{
     }
 
     try{
-        const  newMenu = new Menu({price,description,state: state || 'available',name, dishes})
+        const menuPrice = soup.reduce((sum, item) => sum + item.price, 0) + salad.reduce((sum, item) => sum + item.price, 0) + main.reduce((sum, item) => sum + item.price, 0) + other.reduce((sum, item) => sum + item.price, 0) + dessert.reduce((sum, item) => sum + item.price, 0)
+
+        const newMenu = new Menu({price: menuPrice, description:description.trim(),state: state || 'available',name,soup, salad, main, dessert, other})
         await newMenu.save()
 
         res.json ({success: true, message: 'Successfully,', post: newMenu})
@@ -42,18 +41,18 @@ router.post('/', async (req,res) =>{
     }
 })
 
-// @route PUT api/menus
-// @desc Update menu
+// @route PUT api/menus// @desc Update menu
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { price,description,state,name,dishes } = req.body
-    console.log(req.body)
-
+    const { price,description,state,name,soup, salad, main, dessert, other } = req.body
     // Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+
+    const isExist = await Menu.findOne({name: name, _id: {$ne: req.params.id}})
+    if(isExist) return res.status(406).json({success: false, message: 'Menu đã tồn tại ùi !'})
 
     try {
         let updatedMenu = {
@@ -61,10 +60,10 @@ router.put('/:id', verifyToken, async (req, res) => {
             description: description || '',
             state: state || 'Available',
             name,
-            dishes,
+            soup, salad, main, dessert, other
         }
 
-        const menuUpdateCondition = {_id: req.params.id, user: req.userId}
+        const menuUpdateCondition = {_id: req.params.id}
 
         updatedMenu = await Menu.findOneAndUpdate(
             menuUpdateCondition,
@@ -99,14 +98,14 @@ router.delete('/:id', verifyToken, async (req, res) => {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
     try {
-        const menuDeleteCondition = { _id: req.params.id, user: req.userId }
+        const menuDeleteCondition = {_id: req.params.id}
         const deletedMenu= await Menu.findOneAndDelete(menuDeleteCondition)
 
         // User not authorised or menu not found
         if (!deletedMenu)
             return res.status(401).json({
                 success: false,
-                message: 'Menu not found or user not authorised'
+                message: 'Menu not found'
             })
 
         res.json({ success: true, post: deletedMenu })

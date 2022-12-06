@@ -31,7 +31,10 @@ router.post('/', verifyToken, async (req, res) =>{
     }
 
     try{
-        const  newLounge = new Lounge({price,description,state: state || 'unavailable',capacity,name, max_table, position})
+        const isExist = await Lounge.findOne({name: name})
+        if(isExist) return res.status(406).json({success: false, message: 'Sảnh đã tồn tại ùi !'})
+
+        const  newLounge = new Lounge({price,description: description.trim(),state: state || 'unavailable',capacity,name: name.trim(), max_table, position: position.trim()})
         await newLounge.save()
 
         return res.json ({success: true, message: 'Successfully,', post: newLounge})
@@ -54,12 +57,15 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
 
     try {
+        const isExist = await Lounge.findOne({name: name, _id: {$ne: req.params.id}})
+        if(isExist) return res.status(406).json({success: false, message: 'Sảnh đã tồn tại ùi !'})
+
         let updatedLounge = {
-            price,
-            description: description || '',
+            price,description: description.trim(),
             state: state || 'unavailable',
-            capacity,
-            name, max_table, position
+            capacity,name: name.trim(),
+            max_table,
+            position: position.trim()
         }
 
         const loungeUpdateCondition = {_id: req.params.id}

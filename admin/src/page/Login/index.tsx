@@ -12,6 +12,7 @@ const Login = () => {
     //    POST request to login
         login({username: account.username, pwd: account.password})
             .then((res) => {
+                console.log(res);
                 if (res) navigator("/", {replace: true})
             })
     }

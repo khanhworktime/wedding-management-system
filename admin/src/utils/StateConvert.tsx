@@ -12,6 +12,8 @@ const StateConvert = (props: stateType)=>{
             return <p className="font-semibold text-teal-500">Đã được đặt</p>
         case "using":
             return <p className="font-semibold text-lime-300">Đang sử dụng</p>
+        default:
+            return <p></p>
     }
 }
 
