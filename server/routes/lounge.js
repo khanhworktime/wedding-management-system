@@ -61,6 +61,9 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (max_table < Math.ceil(capacity / 10))
         return res.status(406).json ({success: false, message: 'Số khách và số bàn chưa hợp lệ (Một bàn  có tối đa 10 khách ) '})
 
+    if (max_table >= Math.ceil(capacity / 10) + 10)
+        return res.status(406).json ({success: false, message: 'Số khách và số bàn chưa hợp lệ (Chỉ được dư tối đa 10 bàn) '})
+
     const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
     if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
@@ -68,6 +71,9 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         const isExist = await Lounge.findOne({name: name, _id: {$ne: req.params.id}})
         if(isExist) return res.status(406).json({success: false, message: 'Sảnh đã tồn tại ùi !'})
+        if (max_table >= Math.ceil(capacity / 10) + 10)
+            return res.status(406).json ({success: false, message: 'Số khách và số bàn chưa hợp lệ (Chỉ được dư tối đa 10 bàn) '})
+
 
         let updatedLounge = {
             price,description: description?.trim(),
