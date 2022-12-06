@@ -23,7 +23,6 @@ router.post('/', verifyToken, async (req, res) =>{
     const {price,description,state,capacity,name, max_table, position} = req.body
     //Simple validation
     const user = await User.findOne({_id: req.userId})
-
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
@@ -32,7 +31,7 @@ router.post('/', verifyToken, async (req, res) =>{
         const isExist = await Lounge.findOne({name: name})
         if(isExist) return res.status(406).json({success: false, message: 'Sảnh đã tồn tại ùi !'})
 
-        const  newLounge = new Lounge({price,description: description.trim(),state: state || 'unavailable',capacity,name: name.trim(), max_table, position: position.trim()})
+        const  newLounge = new Lounge({price,description: description?.trim(),state: state || 'unavailable',capacity,name: name?.trim(), max_table, position: position?.trim()})
         await newLounge.save()
 
         return res.json ({success: true, message: 'Successfully,', lounge: newLounge})
@@ -53,16 +52,23 @@ router.put('/:id', verifyToken, async (req, res) => {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
 
+    if (max_table < Math.ceil(capacity / 10))
+        return res.status(406).json ({success: false, message: 'Số khách và số bàn chưa hợp lệ (Một bàn  có tối đa 10 khách ) '})
+
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
+
+
     try {
         const isExist = await Lounge.findOne({name: name, _id: {$ne: req.params.id}})
         if(isExist) return res.status(406).json({success: false, message: 'Sảnh đã tồn tại ùi !'})
 
         let updatedLounge = {
-            price,description: description.trim(),
+            price,description: description?.trim(),
             state: state || 'unavailable',
-            capacity,name: name.trim(),
+            capacity,name: name?.trim(),
             max_table,
-            position: position.trim()
+            position: position?.trim()
         }
 
         const loungeUpdateCondition = {_id: req.params.id}

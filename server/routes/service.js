@@ -26,9 +26,11 @@ router.post('/', verifyToken, async (req, res) =>{
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try{
-        const  newService = new Service({price,description, name, state: state || 'unavailable', type: type || "others"})
+        const  newService = new Service({price,description: description?.trim(), name: name?.trim(), state: state || 'unavailable', type: type || "others"})
         await newService.save()
 
         return res.json ({success: true, message: 'Successfully,', service: newService})
@@ -48,14 +50,16 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Don\'t have permission'})
     }
+    const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+    if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try {
         let updateService = {
             price,
-            description: description || '',
+            description: description?.trim(),
             state: state || 'unavailable',
             type: type || 'others',
-            name,
+            name: name?.trim(),
         }
 
         const serviceUpdateCond = {_id: req.params.id}
