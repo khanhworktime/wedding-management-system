@@ -1,9 +1,7 @@
 const  express = require('express')
 const  router = express.Router()
 const verifyToken = require('../middleware/auth')
-
 const  User = require('../models/User')
-
 const  Service = require ('../models/Service')
 
 // @route GET api/services
@@ -14,7 +12,6 @@ router.get('/', verifyToken, async (req, res) => {
         const services = await Service.find();
         return res.json({ success: true, services })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
@@ -36,7 +33,6 @@ router.post('/', verifyToken, async (req, res) =>{
 
         return res.json ({success: true, message: 'Successfully,', service: newService})
     } catch (error){
-        console.log(error)
         return res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
@@ -83,7 +79,6 @@ router.put('/:id', verifyToken, async (req, res) => {
             post: updateService
         })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
@@ -109,12 +104,9 @@ router.delete('/:id', verifyToken, async (req, res) => {
                 message: 'Service not found'
             })
 
-        res.json({ success: true, post: deleteService })
+        res.json({ success: true, service: deleteService })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
-
-
 module.exports = router

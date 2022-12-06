@@ -1,7 +1,6 @@
 const  express = require('express')
 const  router = express.Router()
 const verifyToken = require('../middleware/auth')
-
 const  Dish = require ('../models/Dish')
 const User = require("../models/User")
 
@@ -13,7 +12,7 @@ router.get('/', verifyToken, async (req, res) => {
         const dishes = await Dish.find();
         return res.json({ success: true, dishes })
     } catch (error) {
-        console.log(error)
+
         return res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
@@ -22,7 +21,6 @@ router.get('/', verifyToken, async (req, res) => {
 //@access Private
 router.post('/', verifyToken, async (req,res) =>{
     const {description,state,name,price,type,order}= req.body
-    console.log(req.body)
 
     //Simple validation
 
@@ -35,9 +33,8 @@ router.post('/', verifyToken, async (req,res) =>{
         const  newDish = new Dish({description,state: state || 'unavailable',name,price,type,order})
         await newDish.save()
 
-        return  res.json ({success: true, message: 'Successfully,', post: newDish})
+        return  res.json ({success: true, message: 'Successfully,', dish: newDish})
     } catch (error){
-        console.log(error)
         return res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
@@ -73,7 +70,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             {new: true}
         )
 
-        // User not authorised to update dish or post not found
+        // User not authorised to update dish or dish not found
         if (!updatedDish)
             return res.status(401).json({
                 success: false,
@@ -86,7 +83,6 @@ router.put('/:id', verifyToken, async (req, res) => {
             post: updatedDish
         })
     } catch (error) {
-        console.log(error)
         res.status(500).json({success: false, message: 'Internal server error'})
     }
 })
@@ -110,9 +106,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
                 message: 'Dish not found'
             })
 
-        res.json({ success: true, post: deletedDish })
+        res.json({ success: true, dish: deletedDish })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })

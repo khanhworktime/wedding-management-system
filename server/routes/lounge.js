@@ -1,7 +1,6 @@
 const  express = require('express')
 const  router = express.Router()
 const verifyToken = require('../middleware/auth')
-
 const  User = require('../models/User')
 const  Lounge = require ('../models/Lounge')
 
@@ -13,14 +12,13 @@ router.get('/', verifyToken, async (req, res) => {
         const lounges = await Lounge.find();
         return res.json({ success: true, lounges })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
 
-//@route POST api/lounges
-//@desc Create lounge
-//@access Private
+// @route GET api/lounges
+// @desc Get lounge
+// @access Private
 router.post('/', verifyToken, async (req, res) =>{
     const {price,description,state,capacity,name, max_table, position} = req.body
     //Simple validation
@@ -37,15 +35,14 @@ router.post('/', verifyToken, async (req, res) =>{
         const  newLounge = new Lounge({price,description: description.trim(),state: state || 'unavailable',capacity,name: name.trim(), max_table, position: position.trim()})
         await newLounge.save()
 
-        return res.json ({success: true, message: 'Successfully,', post: newLounge})
+        return res.json ({success: true, message: 'Successfully,', lounge: newLounge})
     } catch (error){
-        console.log(error)
         return res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
 
-// @route PUT api/lounges
-// @desc Update lounge
+// @route GET api/lounges
+// @desc Get lounge
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
     const { price,description,state,capacity,name, max_table, position } = req.body
@@ -76,7 +73,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             { new: true }
         )
 
-        // User not authorised to update lounge or post not found
+        // User not authorised to update lounge or lounge not found
         if (!updatedLounge)
             return res.status(401).json({
                 success: false,
@@ -89,7 +86,6 @@ router.put('/:id', verifyToken, async (req, res) => {
             post: updatedLounge
         })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
@@ -115,9 +111,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
                 message: 'Lounge not found'
             })
 
-        res.json({ success: true, post: deletedLounge })
+        res.json({ success: true, lounge: deletedLounge })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })

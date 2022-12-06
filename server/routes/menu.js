@@ -1,7 +1,6 @@
 const  express = require('express')
 const  router = express.Router()
 const verifyToken = require('../middleware/auth')
-
 const  Menu = require ('../models/Menu')
 const User = require("../models/User")
 
@@ -36,7 +35,6 @@ router.post('/', async (req,res) =>{
 
         res.json ({success: true, message: 'Successfully,', post: newMenu})
     } catch (error){
-        console.log(error)
         return  res.status(500).json ({success: false, message: 'Internal server error'})
     }
 })
@@ -71,7 +69,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             {new: true}
         )
 
-        // User not authorised to update menu or post not found
+        // User not authorised to update menu or menu not found
         if (!updatedMenu)
             return res.status(401).json({
                 success: false,
@@ -84,7 +82,6 @@ router.put('/:id', verifyToken, async (req, res) => {
             post: updatedMenu
         })
     } catch (error) {
-        console.log(error)
         res.status(500).json({success: false, message: 'Internal server error'})
     }
 })
@@ -108,9 +105,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
                 message: 'Menu not found'
             })
 
-        res.json({ success: true, post: deletedMenu })
+        res.json({ success: true, menu: deletedMenu })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
