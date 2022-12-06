@@ -57,7 +57,7 @@ router.put('/:id', verifyToken, async (req, res) => {
         let updatedLounge = {
             price,
             description: description || '',
-            state: state || 'available',
+            state: state || 'unavailable',
             capacity,
             name, max_table, position
         }

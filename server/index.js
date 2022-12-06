@@ -29,9 +29,9 @@ app.use(cors())
 app.use(express.json())
 app.use('/api/auth', authRouter)
 app.use('/api/lounges', loungeRouter)
-app.use('/api/dishs', dishRouter)
+app.use('/api/dishes', dishRouter)
 app.use('/api/menus', menuRouter)
-app.use('/api/bookingrecords', bookingRecordRouter)
+app.use('/api/bookingRecords', bookingRecordRouter)
 
 const PORT = 5000
 

@@ -14,8 +14,15 @@ const DishSchema = new Schema({
     },
     price: {
         type: Number
+    },
+    order: {
+        type: String,
+        enum: ['Soup','Salad','Món chính','Tráng miệng','Khác']
+    },
+    type: {
+        type: String,
+        enum: ['Món mặn','Món chay','Đồ ngọt','Lẩu','Khác']
     }
-
 
 })
 module.exports = mongoose.model('dishes', DishSchema)

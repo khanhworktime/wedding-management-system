@@ -21,7 +21,7 @@ router.get('/', verifyToken, async (req, res) => {
 //@desc Create dish
 //@access Private
 router.post('/', async (req,res) =>{
-    const {description,state,name}= req.body
+    const {description,state,name,price,type,order}= req.body
     console.log(req.body)
 
     //Simple validation
@@ -32,7 +32,7 @@ router.post('/', async (req,res) =>{
     }
 
     try{
-        const  newDish = new Dish({description,state: state || 'available',name})
+        const  newDish = new Dish({description,state: state || 'available',name,price,type,order})
         await newDish.save()
 
         return  res.json ({success: true, message: 'Successfully,', post: newDish})
@@ -46,7 +46,7 @@ router.post('/', async (req,res) =>{
 // @desc Update dish
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { description,state,name } = req.body
+    const { description,state,name,price,type,order } = req.body
 
     // Simple validation
     const user = await User.findOne({_id: req.userId})
@@ -60,6 +60,9 @@ router.put('/:id', verifyToken, async (req, res) => {
             description: description || '',
             state: state || 'Available',
             name,
+            price,
+            type,
+            order
         }
 
         const dishUpdateCondition = {_id: req.params.id, user: req.userId}
