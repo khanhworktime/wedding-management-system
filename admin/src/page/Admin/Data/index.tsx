@@ -13,6 +13,9 @@ import {serviceSelector} from "../../../store/reducers/service";
 import IService, {initService, typeAdapter} from "../../../interface/IService";
 import {serviceType} from "../../../utils/serviceType";
 import {addService, deleteService, getAllService, updateService} from "../../../api/service";
+import {dishSelector} from "../../../store/reducers/dish";
+import IDish, {dishOrderAdapter, dishTypeAdapter, initDish} from "../../../interface/IDish";
+import {addDish, getAllDishes, updateDish} from "../../../api/dish";
 
 
 const TabLounge = () => {
@@ -61,7 +64,7 @@ const TabLounge = () => {
                     <Modal.Actions>
                         <Button negative onClick={()=>setOpenConfirm({state: false, loungeId: ""})}>Không</Button>
                         <Button positive onClick={()=> {
-                            deleteLounge(confirmModal.loungeId).then(r => {
+                            deleteLounge(confirmModal.loungeId).then(() => {
                                 chooseLounge({});
                                 setOpenConfirm({state: false, loungeId: ""})
                             }
@@ -141,6 +144,14 @@ const TabLounge = () => {
             setEditMode(false)
             setNewLounge(initLounge);
             setOpenModal(true)
+            setErr({
+                error: false,
+                nameErr: false,
+                capacityErr: false,
+                tableErr: false,
+                priceErr: false,
+                errMsg: "Điền đầy đủ các trường thông tin !",
+            })
         }}
              className="flex items-center absolute right-6 top-6 bg-cyan-200 p-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all cursor-pointer">
             <BsPlus/> Thêm sảnh mới
@@ -214,8 +225,193 @@ const TabLounge = () => {
         </div>
     </Tab.Pane>
 }
-
 const TabService = () => {
+    const services = useSelector(serviceSelector);
+    console.log(services)
+    const [newService, setNewService] = useState(initService);
+    const [openModal, setOpenModal] = useState(false)
+    const [formErr, setErr] = useState({
+        error: true,
+        nameErr: true,
+        priceErr: true,
+        errMsg: "Điền đầy đủ các trường thông tin !",
+    })
+
+    const [confirmModal, setOpenConfirm] = useState({state: false, serviceId: ""})
+
+    const formErrValidate = formErr.nameErr || formErr.priceErr
+
+    const formValidate = () => {
+        if (!formErr.error) {
+            if (editMode){
+                updateService({...newService}).then((res) => {
+                    if (res) setOpenModal(false)
+                })
+            } else {
+                addService({...newService}).then((res) => {
+                    if (res) setOpenModal(false)
+                })
+            }
+
+        }
+        else toast.error(formErr.errMsg);
+    }
+
+    const [currentService, chooseService] = useState((services.length > 0) ? services[0] : {});
+    const [editMode, setEditMode] = useState(false)
+
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    return <Tab.Pane>
+            <Transition visible={confirmModal.state} animation='scale' duration={200}>
+                <Modal dimmer="blurring" size={"tiny"} open={confirmModal.state} onClose={()=>setOpenConfirm({state: false, serviceId: ""})}>
+                    <Modal.Header>Xóa dịch vụ ?</Modal.Header>
+                    <Modal.Content>Dịch vụ sẽ được xóa !?</Modal.Content>
+                    <Modal.Actions>
+                        <Button negative onClick={()=>setOpenConfirm({state: false, serviceId: ""})}>Không</Button>
+                        <Button positive onClick={()=> {
+                            deleteService(confirmModal.serviceId).then(r => {
+                                chooseService({});
+                                setOpenConfirm({state: false, serviceId: ""})
+                            }
+                        )}}>Xóa</Button>
+                    </Modal.Actions>
+                </Modal>
+            </Transition>
+            {openModal && <CustomModal showHandler={setOpenModal}>
+            <h2 className="font-semibold mb-4">Thêm dịch vụ mới</h2>
+            <div>
+                <div className="flex flex-col gap-2 mb-4 required field">
+                    <label>Tên dịch vụ*</label>
+                    <Input value={newService.name} required error={formErr.nameErr} onChange={(e)=> {
+                        setErr(prevState => (e.target.value.length !== 0 ? {...prevState,error: formErrValidate, nameErr: false} : {...prevState, error: true, nameErr: true}))
+                        setNewService((prev: any) => {
+                            return {
+                                ...
+                                    prev, name: e.target.value
+                            }
+                    })}} type="text"/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Giá đặt dịch vụ*</label>
+                    <Input value={newService.price} required error={formErr.priceErr} onChange={(e)=> {
+                        setErr(prevState => (e.target.value.length !== 0 ? {...prevState,error: formErrValidate, priceErr: false} : {...prevState, error: true, priceErr: true}))
+                        setNewService((prev: any) => {
+                            return {
+                                ...
+                                    prev, price: parseFloat(e.target.value)
+                            }
+                        })}} type="number"/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Loại dịch vụ</label>
+                    <Dropdown
+                        value={newService.type}
+                        onChange={
+                            (e, data) => {
+                                setNewService((prev:any) => {
+                                    return {...prev, type: data.value};
+                                })
+                            }}
+                        placeholder="Chọn loại hình dịch vụ" options={typeAdapter} selection fluid/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Mô tả</label>
+                    <Input value={newService.description || ""} onChange={(e)=> setNewService((prev:IService)=> {
+                        return{...
+                            prev, description:e.target.value
+                        }
+                    })} type="text"/>
+                </div>
+                <div className="flex w-full gap-4 justify-end">
+                    <Button onClick={(e)=> {
+                        setOpenModal(false)
+                    }}>Hủy</Button>
+                    <Button onClick={(e)=> {
+                        formValidate()
+                    }} primary>{editMode ? "Sửa" : "Thêm mới"}</Button>
+                </div>
+            </div>
+        </CustomModal>}
+        <h1 className="text-2xl font-bold mt-0">Các dịch vụ</h1>
+        <p className="mb-6">Hiện có : {services.length} dịch vụ</p>
+        <div onClick={() => {
+            setEditMode(false)
+            setNewService(initService);
+            setErr({
+                error: false,
+                nameErr: false,
+                priceErr: false,
+                errMsg: "Điền đầy đủ các trường thông tin !",
+            })
+            setOpenModal(true)
+        }}
+             className="flex items-center absolute right-6 top-6 bg-cyan-200 p-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all cursor-pointer">
+            <BsPlus/> Thêm dịch vụ mới
+        </div>
+
+        <div className="flex flex-row gap-10 w-full h-[70vh]">
+            <div className="h-full basis-2/3 overflow-y-scroll">
+                <table className="w-full table-auto h-fit border-collapse relative">
+                    <thead>
+                    <tr>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Mã
+                            dịch vụ
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Tên
+                            dịch vụ
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Loại
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Giá
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Trạng
+                            thái
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody className="">
+                    {
+                        services.map(((service:IService, i: number) => {
+                            return (
+                                <tr onClick={()=>{chooseService(service)}} key={`Service${i}`} className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
+                                    <td className="py-4 px-2 font-semibold">{service._id}</td>
+                                    <td className="py-4 px-2">{service.name}</td>
+                                    <td className="py-4 px-2">{serviceType(service.type)}</td>
+                                    <td className="py-4 px-2">{service.price}</td>
+                                    <td className="py-4 px-2"><StateConvert state={service.state}/></td>
+                                </tr>
+                            )
+                        }))
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div className="basis-1/3 h-full">
+                <h3 className="text-xl font-semibold">Chi tiết</h3>
+                <h4 className="text-lg mt-0 font-semibold">Dịch vụ {currentService.name}</h4>
+                <p className="text-lg font-semibold">#{currentService._id}</p>
+                <p><b>Trạng thái</b> : <StateConvert state={currentService.state || "unavailable"}/> </p>
+                <p><b>Loại dịch vụ</b> : {serviceType(currentService.type)}</p>
+                <p><b>Mô tả</b> : {currentService.description || ""}</p>
+                <p><b>Thao tác:</b></p>
+                <div className="flex flex-row gap-2">
+                    <Button primary onClick={()=>{
+                        setEditMode(true);
+                        setNewService(currentService);
+                        setOpenModal(true)
+                    }}>Sửa</Button>
+                    <Button onClick={()=>setOpenConfirm({state: true, serviceId: currentService._id})} color="red">Xóa</Button>
+                    {currentService.state === "unavailable" && <Button color={"green"} onClick={()=>{updateService({...currentService,
+                         state: "available"
+                    }).then(()=>currentService({}))}}>Kich hoạt</Button>}
+                </div>
+            </div>
+        </div>
+    </Tab.Pane>
+}
+const TabMenu = () => {
     const services = useSelector(serviceSelector);
     console.log(services)
     const [newService, setNewService] = useState(initService);
@@ -303,7 +499,7 @@ const TabService = () => {
                                     return {...prev, type: data.value};
                                 })
                             }}
-                        placeholder="Chọn khách hàng" options={typeAdapter} selection fluid/>
+                        placeholder="Chọn loại hình dịch vụ" options={typeAdapter} selection fluid/>
                 </div>
                 <div className="flex flex-col gap-2 mb-4">
                     <label>Mô tả</label>
@@ -394,16 +590,206 @@ const TabService = () => {
         </div>
     </Tab.Pane>
 }
+const TabDish = () => {
+    const dishes = useSelector(dishSelector);
+    const [newDish, setNewDish] = useState(initDish);
+    const [openModal, setOpenModal] = useState(false)
+    const [formErr, setErr] = useState({
+        error: true,
+        nameErr: true,
+        priceErr: true,
+        errMsg: "Điền đầy đủ các trường thông tin !",
+    })
+
+    const [confirmModal, setOpenConfirm] = useState({state: false, dishId: ""})
+
+    const formErrValidate = formErr.nameErr || formErr.priceErr
+
+    const formValidate = () => {
+        if (!formErr.error) {
+            if (editMode){
+                updateDish({...newDish}).then((res) => {
+                    if (res) setOpenModal(false)
+                })
+            } else {
+                addDish({...newDish}).then((res) => {
+                    if (res) setOpenModal(false)
+                })
+            }
+
+        }
+        else toast.error(formErr.errMsg);
+    }
+
+    const [currentDish, chooseDish] = useState((dishes?.length > 0) ? dishes[0] : {});
+    const [editMode, setEditMode] = useState(false)
+
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    return <Tab.Pane>
+            <Transition visible={confirmModal.state} animation='scale' duration={200}>
+                <Modal dimmer="blurring" size={"tiny"} open={confirmModal.state} onClose={()=>setOpenConfirm({state: false, dishId: ""})}>
+                    <Modal.Header>Xóa dịch vụ ?</Modal.Header>
+                    <Modal.Content>Dịch vụ sẽ được xóa !?</Modal.Content>
+                    <Modal.Actions>
+                        <Button negative onClick={()=>setOpenConfirm({state: false, dishId: ""})}>Không</Button>
+                        <Button positive onClick={()=> {
+                            deleteService(confirmModal.dishId).then(r => {
+                                chooseDish({});
+                                setOpenConfirm({state: false, dishId: ""})
+                            }
+                        )}}>Xóa</Button>
+                    </Modal.Actions>
+                </Modal>
+            </Transition>
+            {openModal && <CustomModal showHandler={setOpenModal}>
+            <h2 className="font-semibold mb-4">Thêm món ăn mới</h2>
+            <div>
+                <div className="flex flex-col gap-2 mb-4 required field">
+                    <label>Tên dịch vụ*</label>
+                    <Input value={newDish.name} required error={formErr.nameErr} onChange={(e)=> {
+                        setErr(prevState => (e.target.value.length !== 0 ? {...prevState,error: formErrValidate, nameErr: false} : {...prevState, error: true, nameErr: true}))
+                        setNewDish((prev: any) => {
+                            return {
+                                ...
+                                    prev, name: e.target.value
+                            }
+                    })}} type="text"/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Giá mỗi món ăn*</label>
+                    <Input value={newDish.price} required error={formErr.priceErr} onChange={(e)=> {
+                        setErr(prevState => (e.target.value.length !== 0 ? {...prevState,error: formErrValidate, priceErr: false} : {...prevState, error: true, priceErr: true}))
+                        setNewDish((prev: any) => {
+                            return {
+                                ...
+                                    prev, price: parseFloat(e.target.value)
+                            }
+                        })}} type="number"/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Trình tự trong thực đơn*</label>
+                    <Dropdown
+                        value={newDish.order}
+                        onChange={
+                            (e, data) => {
+                                setNewDish((prev:any) => {
+                                    return {...prev, order: data.value};
+                                })
+                            }}
+                        placeholder="Trình tự món ăn trong thực đơn" options={dishOrderAdapter} selection fluid/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Loại món ăn*</label>
+                    <Dropdown
+                        value={newDish.type}
+                        onChange={
+                            (e, data) => {
+                                setNewDish((prev:any) => {
+                                    return {...prev, type: data.value};
+                                })
+                            }}
+                        placeholder="Chọn loại món ăn" options={dishTypeAdapter} selection fluid/>
+                </div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <label>Mô tả</label>
+                    <Input value={newDish.description || ""} onChange={(e)=> setNewDish((prev:IDish)=> {
+                        return{...
+                            prev, description:e.target.value
+                        }
+                    })} type="text"/>
+                </div>
+                <div className="flex w-full gap-4 justify-end">
+                    <Button onClick={()=> {
+                        setOpenModal(false)
+                    }}>Hủy</Button>
+                    <Button onClick={(e)=> {
+                        formValidate()
+                    }} primary>{editMode ? "Sửa" : "Thêm mới"}</Button>
+                </div>
+            </div>
+        </CustomModal>}
+        <h1 className="text-2xl font-bold mt-0">Các món ăn</h1>
+        <p className="mb-6">Hiện có : {dishes.length} món ăn</p>
+        <div onClick={() => {
+            setEditMode(false)
+            setNewDish(initDish);
+            setOpenModal(true)
+        }}
+             className="flex items-center absolute right-6 top-6 bg-cyan-200 p-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all cursor-pointer">
+            <BsPlus/> Thêm món mới
+        </div>
+
+        <div className="flex flex-row gap-10 w-full h-[70vh]">
+            <div className="h-full basis-2/3 overflow-y-scroll">
+                <table className="w-full table-auto h-fit border-collapse relative">
+                    <thead>
+                    <tr>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Mã món ăn
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Tên
+                            món ăn
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Loại món ăn
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Thứ tự
+                        </th>
+                        <th className="px-2 py-4 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left">Trạng
+                            thái
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody className="">
+                    {
+                        dishes.map(((dish:IDish, i: number) => {
+                            return (
+                                <tr onClick={()=>{chooseDish(dishes)}} key={`Dish${i}`} className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
+                                    <td className="py-4 px-2 font-semibold">{dish._id}</td>
+                                    <td className="py-4 px-2">{dish.name}</td>
+                                    <td className="py-4 px-2">{dish.type}</td>
+                                    <td className="py-4 px-2">{dish.order}</td>
+                                    <td className="py-4 px-2"><StateConvert state={dish.state}/></td>
+                                </tr>
+                            )
+                        }))
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div className="basis-1/3 h-full">
+                <h3 className="text-xl font-semibold">Chi tiết</h3>
+                <h4 className="text-lg mt-0 font-semibold">Món {currentDish.name}</h4>
+                <p className="text-lg font-semibold">#{currentDish._id}</p>
+                <p><b>Trạng thái</b> : <StateConvert state={currentDish.state || "unavailable"}/> </p>
+                <p><b>Loại món ăn</b> : {currentDish.type}</p>
+                <p><b>Thứ tự món trong thực đơn</b> : {currentDish.order}</p>
+                <p><b>Mô tả</b> : {currentDish.description || ""}</p>
+                <p><b>Thao tác:</b></p>
+                <div className="flex flex-row gap-2">
+                    <Button primary onClick={()=>{
+                        setEditMode(true);
+                        setNewDish(currentDish);
+                        setOpenModal(true)
+                    }}>Sửa</Button>
+                    <Button onClick={()=>setOpenConfirm({state: true, dishId: currentDish._id})} color="red">Xóa</Button>
+                    {currentDish.state === "unavailable" && <Button color={"green"} onClick={()=>{updateDish({...currentDish,
+                         state: "available"
+                    }).then(()=>currentDish({}))}}>Kich hoạt</Button>}
+                </div>
+            </div>
+        </div>
+    </Tab.Pane>
+}
 
 const DataUpdate = () => {
 
-    useEffect(()=>{getAllLounge(); getAllService()})
+    useEffect(()=>{getAllLounge(); getAllService(); getAllDishes()})
 
     const panes = [
         { menuItem: 'Sảnh cưới', render: () => <TabLounge/>},
-        { menuItem: 'Menu và món ăn', render: () => <Tab.Pane>
-
-            </Tab.Pane> },
+        { menuItem: 'Menu', render: () => <TabMenu/> },
+        { menuItem: 'Món ăn', render: () => <TabDish/> },
         { menuItem: 'Dịch vụ', render: () => <TabService/> },
     ]
 
