@@ -31,8 +31,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/lounges', loungeRouter)
 app.use('/api/dishs', dishRouter)
 app.use('/api/menus', menuRouter)
-app.use('/api/services', serviceRouter)
-app.use('/api/bookingRecords', bookingRecordRouter)
+app.use('/api/bookingrecords', bookingRecordRouter)
 
 const PORT = 5000
 
