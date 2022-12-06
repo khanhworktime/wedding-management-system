@@ -80,7 +80,7 @@ router.put('/:id', verifyToken, async (req, res) => {
         res.json({
             success: true,
             message: 'Excellent progress!',
-            post: updateService
+            service: updateService
         })
     } catch (error) {
         res.status(500).json({ success: false, message: 'Internal server error' })

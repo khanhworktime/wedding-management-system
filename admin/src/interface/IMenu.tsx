@@ -11,6 +11,7 @@ interface IMenu {
     dessert?: Array<any>,
     other?: Array<any>,
     name: string;
+    init?: boolean;
 }
 
 const initMenu:IMenu = {
@@ -22,14 +23,22 @@ const initMenu:IMenu = {
     main: [],
     dessert: [],
     other: [],
+    init: true
 }
 
 const menuGetAdapterGroup=(groups:any)=>{
-    return groups.map((item:any)=>({
-        key: item._id,
-        text: item.name,
-        value: item._id
-    }))
+    if (groups.length === 0) return [];
+    let dataSet = groups.map((item:any)=> {
+        if (item.state !== "unavailable")
+            return ({
+                key: item._id,
+                text: item.name,
+                value: item._id
+            })
+    })
+    dataSet = dataSet.filter((item:any)=> item !== undefined)
+    console.log(dataSet)
+    return dataSet
 }
 
 export default IMenu;

@@ -7,6 +7,7 @@ interface ILounge {
     description?: string;
     position?: string;
     name: string;
+    init?: boolean;
 }
 
 const initLounge:ILounge = {
@@ -14,7 +15,8 @@ const initLounge:ILounge = {
     state: "unavailable",
     capacity: 0,
     max_table: 0,
-    price: 0
+    price: 0,
+    init: true
 }
 
 const fakeLounges : Array<ILounge> = [

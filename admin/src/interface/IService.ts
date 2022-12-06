@@ -8,6 +8,7 @@ interface IService {
     name: string;
     type: "party_setup" | "audition" | "invitation" | "clothes" | "makeup" | "video_shot" | "controller" | "others";
     promotion?: string;
+    init?: boolean;
 }
 
 const typeAdapter = [
@@ -56,7 +57,8 @@ const initService:IService = {
     price: 0,
     type: "others",
     state: "unavailable",
-    name: ""
+    name: "",
+    init: true
 }
 
 export {initService, typeAdapter};

@@ -44,7 +44,7 @@ async function addDish(dish: IDish) {
 
     getAllDishes()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function updateDish(dish: IDish) {
@@ -70,7 +70,7 @@ async function updateDish(dish: IDish) {
 
     getAllDishes()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function deleteDish(id: string) {
@@ -97,7 +97,7 @@ async function deleteDish(id: string) {
 
     getAllDishes()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 export {getAllDishes, addDish, deleteDish, updateDish};

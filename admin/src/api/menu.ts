@@ -44,7 +44,7 @@ async function addMenu(menu: IMenu) {
 
     getAllMenu()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function updateMenu(menu: IMenu) {
@@ -70,7 +70,7 @@ async function updateMenu(menu: IMenu) {
 
     getAllMenu()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function deleteMenu(id: string) {
@@ -96,7 +96,7 @@ async function deleteMenu(id: string) {
 
     getAllMenu()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 export {getAllMenu, addMenu, deleteMenu, updateMenu};

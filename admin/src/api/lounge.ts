@@ -44,7 +44,7 @@ async function addLounge(lounge: ILounge) {
 
     getAllLounge()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function updateLounge(lounge: ILounge) {
@@ -69,7 +69,7 @@ async function updateLounge(lounge: ILounge) {
 
     getAllLounge()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function deleteLounge(id: string) {
@@ -94,7 +94,7 @@ async function deleteLounge(id: string) {
 
     getAllLounge()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 export {getAllLounge, addLounge, deleteLounge, updateLounge};

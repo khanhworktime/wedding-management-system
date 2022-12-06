@@ -36,7 +36,7 @@ router.post('/', verifyToken, async (req,res) =>{
         const newMenu = new Menu({price, description:description?.trim(),state: state || 'available',name: name?.trim(),soup, salad, main, dessert, other})
         await newMenu.save()
 
-        res.json ({success: true, message: 'Successfully,', post: newMenu})
+        res.json ({success: true, message: 'Successfully,', menu: newMenu})
     } catch (error){
         console.log(error)
         return  res.status(500).json ({success: false, message: 'Internal server error'})
@@ -85,7 +85,7 @@ router.put('/:id', verifyToken, async (req, res) => {
         res.json({
             success: true,
             message: 'Excellent progress!',
-            post: updatedMenu
+            menu: updatedMenu
         })
     } catch (error) {
         res.status(500).json({success: false, message: 'Internal server error'})

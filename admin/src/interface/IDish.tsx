@@ -6,6 +6,7 @@ interface IDish{
     price: number;
     order: "Soup" | "Salad" | "Món chính" | "Tráng miệng"  | "Khác";
     type: "Món mặn" | "Món chay" | "Đồ ngọt" | "Lẩu" | "Đồ uống" | "Khác";
+    init?: boolean;
 }
 
 const orderConverter = (order:string) => {
@@ -71,7 +72,8 @@ const initDish:IDish = {
     state: "unavailable",
     price: 0,
     order: "Khác",
-    type: "Khác"
+    type: "Khác",
+    init: true
 }
 
 export default  IDish;

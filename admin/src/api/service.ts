@@ -45,7 +45,7 @@ async function addService(service: IService) {
 
     getAllService()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function updateService(service: IService) {
@@ -71,7 +71,7 @@ async function updateService(service: IService) {
 
     getAllService()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 async function deleteService(id: string) {
@@ -97,7 +97,7 @@ async function deleteService(id: string) {
 
     getAllService()
 
-    return fetch.data.success
+    return fetch.data
 }
 
 export {getAllService, addService, deleteService, updateService};
