@@ -12,7 +12,7 @@ router.get('/', verifyToken, async (req, res) => {
         const lounges = await Lounge.find();
         return res.json({ success: true, lounges })
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Internal server error' })
+        return res.status(500).json({ success: false, message: 'Lỗi kết nối server' })
     }
 })
 
@@ -24,7 +24,7 @@ router.post('/', verifyToken, async (req, res) =>{
     //Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     if (max_table < Math.ceil(capacity / 10))
@@ -42,9 +42,9 @@ router.post('/', verifyToken, async (req, res) =>{
         const  newLounge = new Lounge({price,description: description?.trim(),state: state || 'unavailable',capacity,name: name?.trim(), max_table, position: position?.trim()})
         await newLounge.save()
 
-        return res.json ({success: true, message: 'Successfully,', lounge: newLounge})
+        return res.json ({success: true, message: 'Thêm mới thành công', lounge: newLounge})
     } catch (error){
-        return res.status(500).json ({success: false, message: 'Internal server error'})
+        return res.status(500).json ({success: false, message: 'Lỗi xử lý server'})
     }
 })
 
@@ -57,7 +57,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     // Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     if (max_table < Math.ceil(capacity / 10))
@@ -93,20 +93,19 @@ router.put('/:id', verifyToken, async (req, res) => {
             { new: true }
         )
 
-        // User not authorised to update lounge or lounge not found
         if (!updatedLounge)
             return res.status(401).json({
                 success: false,
-                message: 'Lounge not found'
+                message: 'Không tìm thấy sảnh'
             })
 
         res.json({
             success: true,
-            message: 'Excellent progress!',
+            message: 'Cập nhật thành công',
             lounge: updatedLounge
         })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 
@@ -117,23 +116,23 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     try {
         const loungeDeleteCondition = { _id: req.params.id }
         const deletedLounge = await Lounge.findOneAndDelete(loungeDeleteCondition)
 
-        // User not authorised or lounge not found
+
         if (!deletedLounge)
             return res.status(401).json({
                 success: false,
-                message: 'Lounge not found'
+                message: 'Không tìm thấy sảnh'
             })
 
         res.json({ success: true, lounge: deletedLounge })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 

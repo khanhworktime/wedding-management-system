@@ -13,14 +13,14 @@ router.post('/register', async (req, res)=>{
 
     // Simple validation
     if (!username || !password)
-        return res.status(400).json({success: false, message:'Missing username or password'})
+        return res.status(400).json({success: false, message:'Sai tài khoản hoặc mật khẩu'})
 
     try {
         // Check for existing user
         const user = await User.findOne({username})
 
         if(user)
-            return  res.status(400).json({success:false, message:'Username already taken'})
+            return  res.status(400).json({success:false, message:'Tài khoản đã tồn tại'})
 
         // All good
         const  hashedPassword = await argon2.hash(password)
@@ -29,10 +29,10 @@ router.post('/register', async (req, res)=>{
 
         // Return token
         const  accessToken = jwt.sign({userId: newUser._id}, process.env.ACCESS_TOKEN_SECRET )
-        res.json({success:true, message:'User created successfully', accessToken})
+        res.json({success:true, message:'Tạo tài khoản thành công', accessToken})
     }catch (error){
         console.log(error)
-        res.status(500).json({success: false, message:'Internal server error'})
+        res.status(500).json({success: false, message:'Lỗi xử lý server'})
     }
 })
 
@@ -45,27 +45,27 @@ router.post('/login', async(req, res) =>{
 
     // Simple validation
     if (!username || !password)
-        return res.status(400).json({success: false, message:'Missing username or password'})
+        return res.status(400).json({success: false, message:'Sai tài khoản hoặc mật khẩu'})
 
     try{
         //Check for existing user
         const  user = await  User.findOne({username})
         if(!user)
-            return  res.status(400).json({success: false, message:'Incorrect username or password'})
+            return  res.status(400).json({success: false, message:'Tài khoản hoặc mật khẩu không đúng'})
 
         //Username found
         const passwordValid = await  argon2.verify(user.password, password)
         if(!passwordValid || user.role !== 'customer')
-            return res.status(400).json({success: false, message:'Incorrect username or password'})
+            return res.status(400).json({success: false, message:'Tài khoản hoặc mật khẩu không đúng'})
 
         //All good
         // Return token
         const  accessToken = jwt.sign({userId: user._id}, process.env.ACCESS_TOKEN_SECRET )
-        res.json({success:true, message:'User logged in successfully', accessToken})
+        res.json({success:true, message:'Đăng nhập thành công', accessToken})
 
     }catch (error){
         console.log(error)
-        res.status(500).json({success: false, message:'Internal server error'})
+        res.status(500).json({success: false, message:'Lỗi xử lý server'})
     }
 
 
@@ -80,26 +80,29 @@ router.post('/admin/login', async(req, res) =>{
 
     // Simple validation
     if (!username || !password)
-        return res.status(400).json({success: false, message:'Missing username or password'})
+        return res.status(400).json({success: false, message:'Sai tài khoản hoặc mật khẩu'})
 
     try{
         //Check for existing user
         const  user = await User.findOne({username})
         if(!user)
-            return  res.status(400).json({success: false, message:'Incorrect username or password'})
+            return  res.status(400).json({success: false, message:'Tài khoản hoặc mật khẩu không đúng'})
 
         //Username found
         const passwordValid = await  argon2.verify(user.password, password)
         if(!passwordValid || user.role === 'customer')
-            return res.status(400).json({success: false, message:'Incorrect username or password'})
+            return res.status(400).json({success: false, message:'Tài khoản hoặc mật khẩu không đúng'})
 
         //All good
         // Return token
-        const  accessToken = jwt.sign({userId: user._id}, process.env.ACCESS_TOKEN_SECRET )
-        res.json({success:true, message:'User logged in successfully', accessToken})
+        const accessToken = jwt.sign({userId: user._id}, process.env.ACCESS_TOKEN_SECRET )
+        user.accessToken = accessToken
+        await user.save()
+        return res.json({success:true, message:'Đăng nhập thành công', accessToken, username})
 
-    }catch (error){
-        res.status(500).json({success: false, message:'Internal server error'})
+    }
+    catch (error){
+        res.status(500).json({success: false, message:'Lỗi xử lý server'})
     }
 })
 

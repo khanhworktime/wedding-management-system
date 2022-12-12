@@ -3,7 +3,7 @@ const  router = express.Router()
 const verifyToken = require('../middleware/auth')
 const  User = require('../models/User')
 const  BookingBill = require ('../models/BookingBill')
-const Lounge = require("../models/Lounge");
+
 
 // @route GET api/bookingBills
 // @desc Get bookingBill
@@ -13,7 +13,7 @@ router.get('/', verifyToken, async (req, res) => {
         const bookingbills = await BookingBill.find();
         return res.json({ success: true, bookingbills })
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Internal server error' })
+        return res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 
@@ -21,23 +21,23 @@ router.get('/', verifyToken, async (req, res) => {
 //@desc Create bookingBill
 //@access Private
 router.post('/', verifyToken, async (req, res) =>{
-    const {pay_date,price_per_table,booking_price,total_dish,total_service,total,deposite_id,bill_state,discount_for_lounge,booking_service_fee} = req.body
+    const {pay_date,price_per_table,booking_price,deposite,bill_state,discount_for_lounge,booking_service_fee} = req.body
     //Simple validation
     const user = await User.findOne({_id: req.userId})
 
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     try{
 
 
-        const  newBookingBill = new BookingBill({pay_date, price_per_table,booking_price,total_dish, total_service, total,deposite_id,booking_price,bill_state,discount_for_lounge,booking_service_fee})
+        const  newBookingBill = new BookingBill({pay_date, price_per_table,booking_price,deposite,booking_price,bill_state,discount_for_lounge,booking_service_fee})
         await newBookingBill.save()
 
-        return res.json ({success: true, message: 'Successfully,', BookingBill: newBookingBill})
+        return res.json ({success: true, message: 'Thêm mới thành công,', BookingBill: newBookingBill})
     } catch (error){
-        return res.status(500).json ({success: false, message: 'Internal server error'})
+        return res.status(500).json ({success: false, message: 'Lỗi xử lý server'})
     }
 })
 
@@ -45,19 +45,19 @@ router.post('/', verifyToken, async (req, res) =>{
 // @desc Update bookingBill
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { pay_date,price_per_table,booking_price,total_dish,total_service,total,deposite_id,bill_state,discount_for_lounge,booking_service_fee } = req.body
+    const { pay_date,price_per_table,booking_price,deposite,bill_state,discount_for_lounge,booking_service_fee } = req.body
 
     // Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     try {
 
 
         let updatedBookingBill = {
-            pay_date,price_per_table,booking_price,total_dish,total_service,total,deposite_id,bill_state: bill_state || 'unpaid',discount_for_lounge,booking_service_fee
+            pay_date,price_per_table,booking_price,deposite,bill_state: bill_state || 'unpaid',discount_for_lounge,booking_service_fee
         }
 
         const boookingBillUpdateCondition = {_id: req.params.id}
@@ -72,16 +72,16 @@ router.put('/:id', verifyToken, async (req, res) => {
         if (!updatedBookingBill)
             return res.status(401).json({
                 success: false,
-                message: 'BookingBill not found'
+                message: 'Không tìm thấy hóa đơn'
             })
 
         res.json({
             success: true,
-            message: 'Excellent progress!',
+            message: 'Cập nhật thành công',
             post: updatedBookingBill
         })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 
@@ -92,7 +92,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     try {
@@ -103,12 +103,12 @@ router.delete('/:id', verifyToken, async (req, res) => {
         if (!deletedBookingBill)
             return res.status(401).json({
                 success: false,
-                message: 'BookingBill not found'
+                message: 'Không tìm thấy hóa đơn'
             })
 
         res.json({ success: true, bookingBill: deletedBookingBill })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 

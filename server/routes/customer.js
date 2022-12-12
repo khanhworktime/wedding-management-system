@@ -15,8 +15,7 @@ router.get('/', verifyToken, async (req, res) => {
         const customers = await Customer.find().populate('userinfo');
         return res.json({ success: true, customers })
     } catch (error) {
-
-        return res.status(500).json({ success: false, message: 'Internal server error' })
+        return res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 
@@ -45,8 +44,8 @@ router.post('/', verifyToken, async (req, res) =>{
 
         return res.json ({success: true, message: 'Thêm thành công,', customer: customer})
     } catch (error){
-
-        return res.status(500).json ({success: false, message: 'Internal server error'})
+        console.log(error)
+        return res.status(500).json ({success: false, message: 'Lỗi xử lý server'})
     }
 })
 
@@ -58,16 +57,13 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { name, address, birthday, identify_number, state, party_ordered } = req.body
 
     // Simple validation
-    const user = await User.findOne({_id: req.userId})
-    if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
-    }
     const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
     if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try {
-        const isExist = await Lounge.findOne({name: name, _id: {$ne: req.params.id}})
-        if(isExist) return res.status(406).json({success: false, message: 'Sảnh đã tồn tại ùi !'})
+        const isExist = await Customer.findOne({identify_number: identify_number, _id: {$ne: req.params.id}})
+        if(isExist) return res.status(406).json({success: false, message: 'Khách hàng đã tồn tại ùi !'})
+        const customer = await Customer.findOne({identify_number: identify_number}).populate('userinfo')
 
         let updatedCustomer = {
             address: address?.trim(),
@@ -80,7 +76,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 
         const customerUpdateCondition = {_id: req.params.id}
 
-        updatedCustomer = await Lounge.findOneAndUpdate(
+        updatedCustomer = await Customer.findOneAndUpdate(
             customerUpdateCondition,
             {party_ordered: party_ordered},
             { new: true }
@@ -90,17 +86,17 @@ router.put('/:id', verifyToken, async (req, res) => {
         if (!updatedCustomer)
             return res.status(401).json({
                 success: false,
-                message: 'Customer not found'
+                message: 'Không tìm thấy khách hàng'
             })
 
         res.json({
             success: true,
-            message: 'Excellent progress!',
+            message: 'Cập nhật thành công',
             post: updatedCustomer
         })
     } catch (error) {
 
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi kết nối server' })
     }
 })
 
@@ -111,24 +107,24 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     try {
         const customerDeleteCondition = { _id: req.params.id }
-        const deletedCustomer = await Lounge.findOneAndDelete(customerDeleteCondition)
-
+        const deletedCustomer = await Customer.findOneAndDelete(customerDeleteCondition)
+        const customerUser = await User.findOneAndDelete({_id: deletedCustomer['_doc'].userinfo})
         // User not authorised or customer not found
         if (!customerUser)
             return res.status(401).json({
                 success: false,
-                message: 'Customer not found'
+                message: 'Không tìm thấy khách hàng'
             })
 
         res.json({ success: true, post: customerUser })
     } catch (error) {
 
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi kết nối server' })
     }
 })
 

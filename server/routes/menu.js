@@ -12,7 +12,7 @@ router.get('/', verifyToken, async (req, res) => {
         const menus = await Menu.find()
         res.json({ success: true, menus })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 
@@ -24,7 +24,7 @@ router.post('/', verifyToken, async (req,res) =>{
     //Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
 
     const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
@@ -36,10 +36,10 @@ router.post('/', verifyToken, async (req,res) =>{
         const newMenu = new Menu({price, description:description?.trim(),state: state || 'available',name: name?.trim(),soup, salad, main, dessert, other})
         await newMenu.save()
 
-        res.json ({success: true, message: 'Successfully,', menu: newMenu})
+        res.json ({success: true, message: 'Thêm mới thành công', menu: newMenu})
     } catch (error){
         console.log(error)
-        return  res.status(500).json ({success: false, message: 'Internal server error'})
+        return  res.status(500).json ({success: false, message: 'Lỗi xử lý server'})
     }
 })
 
@@ -50,7 +50,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     // Simple validation
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
     const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
     if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
@@ -75,20 +75,20 @@ router.put('/:id', verifyToken, async (req, res) => {
             {new: true}
         )
 
-        // User not authorised to update menu or menu not found
+
         if (!updatedMenu)
             return res.status(401).json({
                 success: false,
-                message: 'Menu not found or user not authorised'
+                message: 'Không tìm thấy menu'
             })
 
         res.json({
             success: true,
-            message: 'Excellent progress!',
+            message: 'Cập nhật thành công',
             menu: updatedMenu
         })
     } catch (error) {
-        res.status(500).json({success: false, message: 'Internal server error'})
+        res.status(500).json({success: false, message: 'Lỗi xử lý server'})
     }
 })
 
@@ -98,7 +98,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 router.delete('/:id', verifyToken, async (req, res) => {
     const user = await User.findOne({_id: req.userId})
     if (user.role !== 'admin') {
-        return res.status(403).json({success: false, message: 'Don\'t have permission'})
+        return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
     try {
         const menuDeleteCondition = {_id: req.params.id}
@@ -108,12 +108,12 @@ router.delete('/:id', verifyToken, async (req, res) => {
         if (!deletedMenu)
             return res.status(401).json({
                 success: false,
-                message: 'Menu not found'
+                message: 'Không tìm thấy menu'
             })
 
         res.json({ success: true, menu: deletedMenu })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
     }
 })
 
