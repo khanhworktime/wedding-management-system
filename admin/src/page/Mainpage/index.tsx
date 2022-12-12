@@ -12,6 +12,9 @@ import Logo from '../../assets/logo/asiana.svg'
 import {useSelector, useDispatch} from "react-redux";
 import {setPage, currentPageSellector} from "../../store/reducers/page"
 import {checkToken} from "../../api/login";
+import Users from "../Admin/Users";
+import Assign from "../RealTime/Assign";
+import Party from "../RealTime/Party";
 
 const Page = () => {
     const dispatch = useDispatch();
@@ -44,14 +47,14 @@ const Page = () => {
                 </ul>
                 <p className="text-indigo-600 font-bold my-3">Quản lí thời gian thực</p>
                 <ul className="pl-4 border-l-2 border-indigo-100 text-indigo-900">
-                    <li onClick={()=> {navigate("customers");dispatch(setPage("customers"))}} className={currentPage === "customers" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Tiệc cưới</li>
-                    <li onClick={()=> {navigate("sale_deals");dispatch(setPage("sale_deals"))}} className={currentPage === "sale_deals" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Phân công</li>
+                    <li onClick={()=> {navigate("party");dispatch(setPage("party"))}} className={currentPage === "party" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Tiệc cưới</li>
+                    <li onClick={()=> {navigate("assign");dispatch(setPage("assign"))}} className={currentPage === "assign" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Phân công</li>
                 </ul>
                 <p className="text-indigo-600 font-bold my-3">ADMIN</p>
                 <ul className="pl-4 border-l-2 border-indigo-100 text-indigo-900">
                     <li onClick={()=> {navigate("data_update");dispatch(setPage("data_update"))}} className={currentPage === "data_update" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Cập nhật thông tin</li>
                     <li onClick={()=> {navigate("promotion");dispatch(setPage("promotion"))}} className={currentPage === "promotion" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Khuyến mãi</li>
-                    <li onClick={()=> {navigate("promotion");dispatch(setPage("promotion"))}} className={currentPage === "promotion" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Quản lí tài khoản</li>
+                    <li onClick={()=> {navigate("users");dispatch(setPage("users"))}} className={currentPage === "users" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Quản lí tài khoản</li>
                 </ul>
                 <div onClick={()=>{
                     localStorage.removeItem("accessToken");
@@ -69,6 +72,9 @@ const Page = () => {
                     <Route path="contracts" element={<Contracts/>}/>
                     <Route path="data_update" element={<DataUpdate/>}/>
                     <Route path="promotion" element={<Promotion/>}/>
+                    <Route path="users" element={<Users/>}/>
+                    <Route path="assign" element={<Assign/>}/>
+                    <Route path="party" element={<Party/>}/>
                 </Routes>
             </div>
         </div>

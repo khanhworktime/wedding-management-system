@@ -5,6 +5,9 @@ const  User = require('../models/User')
 const  Customer = require ('../models/Customer')
 const argon2 = require("argon2");
 const {Schema} = require("mongoose");
+const calculateAge = require("../utils/calcAge")
+const validateEmail = require("../utils/emailValidate")
+const omit = require("../utils/omitProp")
 
 
 // @route GET api/customers
@@ -12,7 +15,7 @@ const {Schema} = require("mongoose");
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const customers = await Customer.find().populate('userinfo');
+        let customers = await Customer.find().populate('userinfo');
         return res.json({ success: true, customers })
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Lỗi xử lý server' })
@@ -23,7 +26,7 @@ router.get('/', verifyToken, async (req, res) => {
 //@desc Create customer
 //@access Private
 router.post('/', verifyToken, async (req, res) =>{
-    const {name, address, birthday, identify_number, state, party_ordered} = req.body
+    const {name, address, birthday, identify_number, gender, email ,state, party_ordered} = req.body
     //Simple validation
     if (req.user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
@@ -31,12 +34,18 @@ router.post('/', verifyToken, async (req, res) =>{
     const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
     if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
+    if (!/^\d+$/.test(identify_number)) return res.status(406).json ({success: false, message: 'Mã chứng minh thư chứa kí tự không hợp lệ!'})
+    if (identify_number.length > 16 || identify_number.length < 9) return res.status(406).json ({success: false, message: 'Mã chứng minh thư dài từ 9 - 16 kí tự số !'})
+
+    if (calculateAge(new Date(birthday)) < 18) return res.status(406).json ({success: false, message: 'Chưa đủ tuổi để đặt tiệc'})
+    if (email && !validateEmail(email)) return res.status(406).json ({success: false, message: 'Email nhập chưa đúng định dạng'})
+
     try{
         const isExist = await User.findOne({username: identify_number})
         if (isExist) return res.status(406).json({success: false, message: 'Khách hàng đã tồn tại !'})
 
         const  hashedPassword = await argon2.hash('1234')
-        const  newCustomer = new User({address: address?.trim(),state: state || 'available', birthday , role: 'customer' ,name: name?.trim(), identify_number , username: identify_number , password: hashedPassword, party_ordered})
+        const  newCustomer = new User({gender, email, address: address?.trim(),state: state || 'available', birthday , role: 'customer' ,name: name?.trim(), identify_number , username: identify_number , password: hashedPassword, party_ordered})
         await newCustomer.save()
         console.log(newCustomer)
         const customer = new Customer({userinfo: newCustomer})
@@ -54,33 +63,34 @@ router.post('/', verifyToken, async (req, res) =>{
 // @desc Update customer
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { name, address, birthday, identify_number, state, party_ordered } = req.body
+    const {name, address, email, birthday, identify_number, gender, state, party_ordered } = req.body
 
     // Simple validation
     const formatString = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
     if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
+    if (!/^\d+$/.test(identify_number)) return res.status(406).json ({success: false, message: 'Mã chứng minh thư chứa kí tự không hợp lệ!'})
+    if (identify_number.length > 16 || identify_number.length < 9) return res.status(406).json ({success: false, message: 'Mã chứng minh thư dài từ 9 - 16 kí tự số !'})
+
+    if (calculateAge(new Date(birthday)) < 18) return res.status(406).json ({success: false, message: 'Chưa đủ tuổi để đặt tiệc'})
+    if (email && !validateEmail(email)) return res.status(406).json ({success: false, message: 'Email nhập chưa đúng định dạng'})
+
     try {
-        const isExist = await Customer.findOne({identify_number: identify_number, _id: {$ne: req.params.id}})
+        const isExist = await User.findOne({identify_number: identify_number,_id: {$ne: req.params.id}})
         if(isExist) return res.status(406).json({success: false, message: 'Khách hàng đã tồn tại ùi !'})
-        const customer = await Customer.findOne({identify_number: identify_number}).populate('userinfo')
+
+        const customer = await Customer.findOne({_id: req.params.id}).populate('userinfo')
 
         let updatedCustomer = {
             address: address?.trim(),
             birthday,
+            email,
             identify_number,
+            gender,
             name: name?.trim()
         }
 
-        await User.findOneAndUpdate({_id: {$eq: customer['_doc'].userinfo._id}}, updatedCustomer)
-
-        const customerUpdateCondition = {_id: req.params.id}
-
-        updatedCustomer = await Customer.findOneAndUpdate(
-            customerUpdateCondition,
-            {party_ordered: party_ordered},
-            { new: true }
-        )
+        await User.findOneAndUpdate({_id: {$eq: req.params.id}}, updatedCustomer)
 
         // User not authorised to update customer or customer not found
         if (!updatedCustomer)
@@ -95,7 +105,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             post: updatedCustomer
         })
     } catch (error) {
-
+        console.log(error)
         res.status(500).json({ success: false, message: 'Lỗi kết nối server' })
     }
 })
@@ -112,8 +122,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
     try {
         const customerDeleteCondition = { _id: req.params.id }
-        const deletedCustomer = await Customer.findOneAndDelete(customerDeleteCondition)
-        const customerUser = await User.findOneAndDelete({_id: deletedCustomer['_doc'].userinfo})
+        const deletedCustomer = await Customer.findOneAndDelete(customerDeleteCondition).populate('userinfo')
+        const customerUser = await User.findOneAndDelete({_id: deletedCustomer.userinfo._id})
         // User not authorised or customer not found
         if (!customerUser)
             return res.status(401).json({

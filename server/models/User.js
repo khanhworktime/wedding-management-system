@@ -36,7 +36,9 @@ const UserSchema = new Schema({
     },
     accessToken: {
         type: String
-    }
+    },
+    email: String,
+    gender: String
 })
 
 module.exports = mongoose.model('users', UserSchema)

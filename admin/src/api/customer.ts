@@ -46,5 +46,57 @@ async function addNewCustomer(customer: ICustomer) {
         }
     })
 }
+async function deleteCustomer(id: string) {
 
-export {addNewCustomer, getAllCustomer};
+    const deleteCustomer = () => axios.delete("/customers/" + id, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    return await toast.promise(deleteCustomer, {
+        pending: 'Đang xử lý...',
+        success: {
+            render(){
+                return 'Đã xóa thành công'
+            },
+
+        },
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+}
+async function updateCustomer(id: string | undefined, customer: ICustomer){
+
+    const deleteCustomer = () => axios.put("/customers/" + id,{...customer}, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    return await toast.promise(deleteCustomer, {
+        pending: 'Đang xử lý...',
+        success: {
+            render(){
+                return 'Đã xóa thành công'
+            },
+
+        },
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+}
+
+export {addNewCustomer, getAllCustomer, deleteCustomer, updateCustomer};

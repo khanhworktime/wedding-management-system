@@ -1,4 +1,5 @@
 export default interface ICustomer {
+    _id?: string;
     name: string;
     identify_number: string;
     birthday: string;
