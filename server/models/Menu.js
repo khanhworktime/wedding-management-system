@@ -36,6 +36,10 @@ const MenuSchema = new Schema({
     other: [{
         type: Schema.Types.Mixed,
         default: {}
-    }]
+    }],
+    promotion: {
+        type: Schema.Types.ObjectId,
+        ref: 'promotions'
+    }
 })
 module.exports = mongoose.model('menus', MenuSchema)

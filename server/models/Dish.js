@@ -22,6 +22,10 @@ const DishSchema = new Schema({
     type: {
         type: String,
         enum: ['Món mặn','Món chay','Đồ ngọt','Lẩu','Khác']
+    },
+    promotion: {
+        type: Schema.Types.ObjectId,
+        ref: 'promotions'
     }
 
 })

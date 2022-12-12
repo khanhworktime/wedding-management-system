@@ -84,7 +84,7 @@ router.post('/admin/login', async(req, res) =>{
 
     try{
         //Check for existing user
-        const  user = await  User.findOne({username})
+        const  user = await User.findOne({username})
         if(!user)
             return  res.status(400).json({success: false, message:'Incorrect username or password'})
 
@@ -103,4 +103,12 @@ router.post('/admin/login', async(req, res) =>{
     }
 })
 
+router.post('/checkToken', async (req, res)=>{
+    const {username, accessToken} = req.body
+    let user = User.findOne({username})
+    user = await user.exec()
+    if (!user || !user.accessToken) return res.json({success: false, message:'Không có tài khoản!'})
+    if (user.accessToken === accessToken) return res.json({success: true, message:'Đã đăng nhập'})
+    return res.json({success: false, message:'Chưa đăng nhập'})
+})
 module.exports = router

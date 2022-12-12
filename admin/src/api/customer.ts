@@ -7,40 +7,44 @@ import ICustomer from "../interface/ICustomer";
 import store from "../store";
 import {setCustomers} from "../store/reducers/customer";
 
-function getAllCustomer() {
-    const getAll = () => axios.get("/customer", {
+async function getAllCustomer() {
+    const getAll = () => axios.get("/customers", {
         baseURL: API_NAME.concat("/api"),
         headers: {
             ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
-    getAll().then(res => {
-        store.dispatch(setCustomers(res.data));
-    })
+    let response = await getAll();
+    return response.data.customers;
 }
 
 async function addNewCustomer(customer: ICustomer) {
 
-    const addCustomer = () => axios.post("/customer", {...customer}, {
+    const addCustomer = () => axios.post("/customers", {...customer}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
             ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
-    await toast.promise(addCustomer, {
+    return await toast.promise(addCustomer, {
         pending: 'Đang xử lý...',
-        success: 'Đã thêm gòi á 👌',
+        success: {
+            render(){
+                return 'Đã thêm gồi á 👌'
+            },
+
+        },
         error: {
             render({data}){
                 // @ts-ignore
-                return data.message;
+                return data.response.data.message;
             }
         }
     })
-
-    getAllCustomer()
 }
 
 export {addNewCustomer, getAllCustomer};

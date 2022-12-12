@@ -12,6 +12,8 @@ const  customerRouter = require('./routes/customer')
 const  bookingRecordRouter = require('./routes/bookingRecord')
 const  promotionRouter = require('./routes/promotion')
 const  bookingBillRouter = require('./routes/bookingBill')
+const  userRouter = require('./routes/user')
+
 const connectDB = async () => {
     try {
         await mongoose.connect(
@@ -39,6 +41,8 @@ app.use('/api/customers', customerRouter)
 app.use('/api/bookingRecords', bookingRecordRouter)
 app.use('/api/promotions', promotionRouter)
 app.use('/api/bookingBills', bookingBillRouter)
+app.use('/api/users', userRouter)
+app.use('/api/parties', partyRouter)
 
 const PORT = 5000
 

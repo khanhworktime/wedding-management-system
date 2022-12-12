@@ -3,11 +3,11 @@ const Schema = mongoose.Schema
 
 const BookingContractSchema = new Schema({
     validate_number:{
-        type: Number
+        type: String
     },
     contract_state:{
         type: String,
-        enum: ['available','unavailable']
+        enum: ['init', 'confirmed' , 'cancel']
     }
 })
 module.exports = mongoose.model('bookingContracts', BookingContractSchema)

@@ -23,6 +23,10 @@ const LoungeSchema = new Schema({
     },
     position: {
         type:String
+    },
+    promotion: {
+        type: Schema.Types.ObjectId,
+        ref: 'promotions'
     }
 })
 module.exports = mongoose.model('lounges', LoungeSchema)

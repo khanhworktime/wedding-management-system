@@ -1,18 +1,24 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {BsPlus} from "react-icons/bs";
 import Modal from "../../components/CustomModal";
 import store from "../../store";
 import {setPage} from "../../store/reducers/page";
-import {Button, Input} from "semantic-ui-react";
+import {Button, Dropdown, Input} from "semantic-ui-react";
+import {addNewCustomer, getAllCustomer} from "../../api/customer";
+import {initCustomer} from "../../interface/ICustomer";
 
 //TODO: add new customer
 
 const CustomerInfo = () => {
 
     const [openModal, setOpenModal] = useState(false);
-    useLayoutEffect(()=>{
-        store.dispatch(setPage("customers"))
-    })
+    const [customers, setCustomers] = useState()
+    const [reFetch, requestRefetch] = useState(false)
+    useEffect(() => {
+        getAllCustomer().then(customers => setCustomers(customers))
+    }, [reFetch])
+    console.log(customers)
+    const [editCustomer, setEditCustomer] = useState(initCustomer)
     return (
         <div className="flex flex-col flex-wrap gap-6 bg-white p-6 rounded-md relative">
             {openModal && <Modal showHandler={setOpenModal}>
@@ -20,37 +26,58 @@ const CustomerInfo = () => {
                 <form>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Tên khách hàng</label>
-                        <Input type="text"/>
+                        <Input onChange={(e)=>{setEditCustomer((prev)=> ({...prev, name: e.target.value}))}} value={editCustomer.name} type="text"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
-                        <label>Số chứng chỉ công dân</label>
-                        <Input type="text"/>
+                        <label>Số chứng minh thư</label>
+                        <Input onChange={(e)=>{setEditCustomer((prev)=> ({...prev, identify_number: e.target.value }))}} value={editCustomer.identify_number} type="text"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
-                        <label>Năm sinh</label>
-                        <Input type="date"/>
+                        <label>Giới tính</label>
+                        <Dropdown onChange={(e, data)=>{ // @ts-ignore
+                            setEditCustomer((prev)=> ({...prev, gender: data?.value || "" }))}} selection fluid value={editCustomer.gender}  options={[{
+                                text: 'Nam', value: 'Nam',
+                            },
+                            {
+                                text: 'Nữ', value: 'Nữ',
+                            },
+                            {
+                                text: 'Khác', value: 'Khác',
+                            }]}/>
+                    </fieldset>
+                    <fieldset className="flex flex-col gap-2 mb-4">
+                        <label>Ngày tháng năm sinh</label>
+                        <Input onChange={(e)=>{setEditCustomer((prev)=> ({...prev,birthday: e.target.value }))}} value={editCustomer.birthday} type="date"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Email</label>
-                        <Input type="text"/>
+                        <Input onChange={(e)=>{setEditCustomer((prev)=> ({...prev,email: e.target.value }))}} value={editCustomer.email} type="text"/>
                     </fieldset>
                     <fieldset className="flex flex-col gap-2 mb-4">
                         <label>Địa chỉ</label>
-                        <Input type="text"/>
-                    </fieldset>
-                    <fieldset className="flex flex-row gap-2 mb-4">
-                        <label>Tạo tài khoản mới ?</label>
-                        <Input type="checkbox"/>
+                        <Input onChange={(e)=>{setEditCustomer((prev)=> ({...prev,address: e.target.value }))}} value={editCustomer.address} type="text"/>
                     </fieldset>
                     <div className="flex w-full gap-4 justify-end">
-                        <Button onClick={()=>setOpenModal(false)}>Hủy</Button>
-                        <Button primary>Thêm mới</Button>
+                        <Button onClick={()=> {
+                            setOpenModal(false)
+                            setEditCustomer(initCustomer)
+                        }}>Hủy</Button>
+                        <Button primary onClick={(e)=>{
+                            e.preventDefault()
+                            addNewCustomer(editCustomer).then((res)=> {
+                                console.log(res.data.success)
+                                requestRefetch(prev => !prev)
+                            });
+                        }}>Thêm mới</Button>
                     </div>
                 </form>
             </Modal>}
 
             <h1 className="text-2xl font-bold mb-6">Khách hàng</h1>
-            <div onClick={()=>setOpenModal(true)} className="flex items-center absolute right-6 top-6 bg-cyan-200 p-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all cursor-pointer"><BsPlus/> Thêm khách hàng</div>
+            <div onClick={()=> {
+                setEditCustomer(initCustomer)
+                setOpenModal(true)
+            }} className="flex items-center absolute right-6 top-6 bg-cyan-200 p-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all cursor-pointer"><BsPlus/> Thêm khách hàng</div>
 
             <table className="table-auto border-collapse">
                 <thead>

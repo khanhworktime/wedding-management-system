@@ -10,9 +10,24 @@ const PromotionSchema = new Schema({
     start_at:Date,
     end_at:Date,
     description: String,
-    discount_value: Number,
-    lounge_id :String,
-    service_id:String,
-    menu_id: String
+    lounges: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'lounges'
+        }
+    ],
+    menus: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'menus'
+        }
+    ],
+    services: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'services'
+        }
+    ],
+
 })
 module.exports = mongoose.model('promotions', PromotionSchema)

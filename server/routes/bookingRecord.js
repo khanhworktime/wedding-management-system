@@ -7,6 +7,11 @@ const  BookingRecord = require ('../models/BookingRecord')
 // @desc Get bookingRecord
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
+
+    if (req.user.role !== 'admin') {
+        return res.status(406).json ({success: false, message: 'Không có quyền truy cập!'})
+    }
+
     try {
         const bookingRecords = await BookingRecord.find({ user: req.userId }).populate('user', [
             'username'

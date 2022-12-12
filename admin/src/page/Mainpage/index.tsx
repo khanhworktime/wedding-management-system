@@ -11,6 +11,7 @@ import Promotion from "../Admin/Promotion";
 import Logo from '../../assets/logo/asiana.svg'
 import {useSelector, useDispatch} from "react-redux";
 import {setPage, currentPageSellector} from "../../store/reducers/page"
+import {checkToken} from "../../api/login";
 
 const Page = () => {
     const dispatch = useDispatch();
@@ -19,8 +20,11 @@ const Page = () => {
     const navigate = useNavigate()
 
     useEffect(()=>{
-        if (!localStorage.getItem("accessToken")) navigate("/login", {replace: true})
-    })
+        checkToken().then(r => {
+            console.log(r)
+            if (!r) navigate('/login', {replace: true})
+        });
+    }, [])
 
     return (
         <div className="bg-cyan-100 flex min-w-screen min-h-screen">
