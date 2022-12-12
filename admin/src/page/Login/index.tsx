@@ -1,8 +1,6 @@
 import {useEffect, useState} from 'react';
-import {fakeAdmin} from "./fakeLoginAccount";
 import {useNavigate} from "react-router-dom";
 import login from "../../api/login";
-import {resolveAny} from "dns";
 
 const Login = () => {
     const [account, setAccount] = useState({username: "", password : ""})

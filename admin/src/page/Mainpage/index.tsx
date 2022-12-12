@@ -38,11 +38,16 @@ const Page = () => {
                     <li onClick={()=> {navigate("sale_deals");dispatch(setPage("sale_deals"))}} className={currentPage === "sale_deals" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Đơn đặt tiệc</li>
                     <li onClick={()=> {navigate("contracts");dispatch(setPage("contracts"))}} className={currentPage === "contracts" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Hợp đồng tiệc</li>
                 </ul>
+                <p className="text-indigo-600 font-bold my-3">Quản lí thời gian thực</p>
+                <ul className="pl-4 border-l-2 border-indigo-100 text-indigo-900">
+                    <li onClick={()=> {navigate("customers");dispatch(setPage("customers"))}} className={currentPage === "customers" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Tiệc cưới</li>
+                    <li onClick={()=> {navigate("sale_deals");dispatch(setPage("sale_deals"))}} className={currentPage === "sale_deals" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Phân công</li>
+                </ul>
                 <p className="text-indigo-600 font-bold my-3">ADMIN</p>
                 <ul className="pl-4 border-l-2 border-indigo-100 text-indigo-900">
                     <li onClick={()=> {navigate("data_update");dispatch(setPage("data_update"))}} className={currentPage === "data_update" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Cập nhật thông tin</li>
                     <li onClick={()=> {navigate("promotion");dispatch(setPage("promotion"))}} className={currentPage === "promotion" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Khuyến mãi</li>
-
+                    <li onClick={()=> {navigate("promotion");dispatch(setPage("promotion"))}} className={currentPage === "promotion" ? activeClass :"cursor-pointer px-4 py-2 hover:bg-indigo-900  hover:text-white rounded-lg"+ " transition-all"}>Quản lí tài khoản</li>
                 </ul>
                 <div onClick={()=>{
                     localStorage.removeItem("accessToken");

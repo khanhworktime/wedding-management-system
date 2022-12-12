@@ -1,6 +1,7 @@
 import React, {useLayoutEffect} from 'react';
 import store from "../../store";
 import {setPage} from "../../store/reducers/page";
+import {Input} from "semantic-ui-react";
 
 const Report = () => {
 
@@ -10,7 +11,7 @@ const Report = () => {
 
     return (
         <div>
-            Reports
+            <Input required error={true} />
         </div>
     );
 };

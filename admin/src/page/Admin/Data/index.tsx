@@ -95,8 +95,7 @@ const TabLounge = () => {
                         } : {...prevState, error: true, nameErr: true}))
                         setNewLounge((prev: any) => {
                             return {
-                                ...
-                                    prev, name: e.target.value
+                                ...prev, name: e.target.value
                             }
                         })
                     }} type="text"/>
@@ -177,11 +176,11 @@ const TabLounge = () => {
             setNewLounge(initLounge);
             setOpenModal(true)
             setErr({
-                error: false,
-                nameErr: false,
-                capacityErr: false,
-                tableErr: false,
-                priceErr: false,
+                error: true,
+                nameErr: true,
+                capacityErr: true,
+                tableErr: true,
+                priceErr: true,
                 errMsg: "Điền đầy đủ các trường thông tin !",
             })
         }}
@@ -221,13 +220,13 @@ const TabLounge = () => {
                                 <tr onClick={() => {
                                     chooseLounge(lounge)
                                 }} key={`Lounge${i}`}
-                                    className={`hover:bg-cyan-200  transition-colors cursor-pointer ${lounge._id === currentLounge._id ? "bg-cyan-200" : ""}`}>
-                                    <td className="py-4 px-2 max-w-[100px] break-all font-semibold">{lounge._id}</td>
-                                    <td className="py-4 px-2">{lounge.name}</td>
-                                    <td className="py-4 px-2">{lounge.position ? lounge.position : ""}</td>
-                                    <td className="py-4 px-2">{lounge.capacity}</td>
-                                    <td className="py-4 px-2">{lounge.max_table}</td>
-                                    <td className="py-4 px-2"><StateConvert state={lounge.state}/></td>
+                                    className={`hover:bg-cyan-200  transition-colors cursor-pointer ${lounge?._id === currentLounge?._id ? "bg-cyan-200" : ""}`}>
+                                    <td className="py-4 px-2 max-w-[100px] break-all font-semibold">{lounge?._id}</td>
+                                    <td className="py-4 px-2">{lounge?.name}</td>
+                                    <td className="py-4 px-2">{lounge?.position ? lounge?.position : ""}</td>
+                                    <td className="py-4 px-2">{lounge?.capacity}</td>
+                                    <td className="py-4 px-2">{lounge?.max_table}</td>
+                                    <td className="py-4 px-2"><StateConvert state={lounge?.state}/></td>
                                 </tr>
                             )
                         }))
@@ -238,21 +237,20 @@ const TabLounge = () => {
             {!currentLounge?.init &&
                 <div className="basis-1/3 h-full overflow-y-scroll pl-2 pr-6 overflow-y-scroll pl-2 pr-6">
                     <h3 className="text-xl font-semibold">Chi tiết</h3>
-                    <h4 className="text-lg mt-0 font-semibold">Sảnh {currentLounge.name}</h4>
-                    <p className="text-lg font-semibold">#{currentLounge._id}</p>
-                    <p><b>Trạng thái</b> : <StateConvert state={currentLounge.state || "unavailable"}/></p>
-                    <p><b>Sức chứa của sảnh</b> : {currentLounge.capacity} khách</p>
-                    <p><b>Số lượng bàn tối đa</b> : {currentLounge.max_table}</p>
-                    <p><b>Vị trí trong tòa nhà</b> : {currentLounge.position || ""}</p>
-                    <p><b>Giá đặt sảnh</b> : {currentLounge.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
+                    <h4 className="text-lg mt-0 font-semibold">Sảnh {currentLounge?.name}</h4>
+                    <p className="text-lg font-semibold">#{currentLounge?._id}</p>
+                    <p><b>Trạng thái</b> : <StateConvert state={currentLounge?.state || "unavailable"}/></p>
+                    <p><b>Sức chứa của sảnh</b> : {currentLounge?.capacity} khách</p>
+                    <p><b>Số lượng bàn tối đa</b> : {currentLounge?.max_table}</p>
+                    <p><b>Vị trí trong tòa nhà</b> : {currentLounge?.position || ""}</p>
+                    <p><b>Giá đặt sảnh</b> : {currentLounge?.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
                     </p>
-                    <p><b>Mô tả</b> : {currentLounge.description || ""}</p>
+                    <p><b>Mô tả</b> : {currentLounge?.description || ""}</p>
                     <p><b>Thao tác:</b></p>
                     <div className="flex flex-row gap-2">
                         <Button primary onClick={() => {
                             setEditMode(true);
                             setNewLounge(currentLounge);
-                            setOpenModal(true);
                             setErr({
                                 error: false,
                                 nameErr: false,
@@ -261,10 +259,11 @@ const TabLounge = () => {
                                 priceErr: false,
                                 errMsg: "Điền đầy đủ các trường thông tin !",
                             })
+                            setOpenModal(true);
                         }}>Sửa</Button>
-                        <Button onClick={() => setOpenConfirm({state: true, loungeId: currentLounge._id})}
+                        <Button onClick={() => setOpenConfirm({state: true, loungeId: currentLounge?._id})}
                                 color="red">Xóa</Button>
-                        {currentLounge.state === "unavailable" &&
+                        {currentLounge?.state === "unavailable" &&
                             <Button color={"green"}
                                     onClick={() => {
                                         updateLounge({
@@ -272,7 +271,7 @@ const TabLounge = () => {
                                             state: "available"
                                         }).then((res) => chooseLounge(res.lounge))
                                     }}>Kich hoạt</Button>}
-                        {currentLounge.state === "available" &&
+                        {currentLounge?.state === "available" &&
                             <Button color={"red"}
                                     onClick={() => {
                                         updateLounge({
@@ -417,9 +416,9 @@ const TabService = () => {
             setEditMode(false)
             setNewService(initService);
             setErr({
-                error: false,
-                nameErr: false,
-                priceErr: false,
+                error: true,
+                nameErr: true,
+                priceErr: true,
                 errMsg: "Điền đầy đủ các trường thông tin !",
             })
             setOpenModal(true)
@@ -484,6 +483,12 @@ const TabService = () => {
                         <Button primary onClick={() => {
                             setEditMode(true);
                             setNewService(currentService);
+                            setErr({
+                                error: false,
+                                nameErr: false,
+                                priceErr: false,
+                                errMsg: "Điền đầy đủ các trường thông tin !",
+                            })
                             setOpenModal(true)
                         }}>Sửa</Button>
                         <Button onClick={() => setOpenConfirm({state: true, serviceId: currentService._id})}
@@ -998,9 +1003,9 @@ const TabDish = () => {
             setEditMode(false)
             setNewDish(initDish);
             setErr({
-                error: false,
-                nameErr: false,
-                priceErr: false,
+                error: true,
+                nameErr: true,
+                priceErr: true,
                 errMsg: "Điền đầy đủ các trường thông tin !",
             })
             setOpenModal(true)

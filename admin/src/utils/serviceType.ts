@@ -5,7 +5,7 @@ export function serviceType(type: "party_setup" | "audition" | "invitation" | "c
         case "party_setup":
             return "Tổ chức sự kiện"
         case "invitation":
-            return "Thiệp mới"
+            return "Thiệp mời"
         case "clothes":
             return "Trang phục"
         case "makeup":
