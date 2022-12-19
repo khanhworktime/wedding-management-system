@@ -37,6 +37,8 @@ router.post('/', verifyToken, async (req, res) =>{
     if (!/^\d+$/.test(identify_number)) return res.status(406).json ({success: false, message: 'Mã chứng minh thư chứa kí tự không hợp lệ!'})
     if (identify_number.length > 16 || identify_number.length < 9) return res.status(406).json ({success: false, message: 'Mã chứng minh thư dài từ 9 - 16 kí tự số !'})
 
+    console.log(calculateAge(new Date(birthday)))
+
     if (calculateAge(new Date(birthday)) < 18) return res.status(406).json ({success: false, message: 'Chưa đủ tuổi để đặt tiệc'})
     if (email && !validateEmail(email)) return res.status(406).json ({success: false, message: 'Email nhập chưa đúng định dạng'})
 
@@ -47,11 +49,8 @@ router.post('/', verifyToken, async (req, res) =>{
         const  hashedPassword = await argon2.hash('1234')
         const  newCustomer = new User({gender, email, address: address?.trim(),state: state || 'available', birthday , role: 'customer' ,name: name?.trim(), identify_number , username: identify_number , password: hashedPassword, party_ordered})
         await newCustomer.save()
-        console.log(newCustomer)
-        const customer = new Customer({userinfo: newCustomer})
-        await customer.save()
 
-        return res.json ({success: true, message: 'Thêm thành công,', customer: customer})
+        return res.json ({success: true, message: 'Thêm thành công,', newCustomer})
     } catch (error){
         console.log(error)
         return res.status(500).json ({success: false, message: 'Lỗi xử lý server'})
@@ -78,8 +77,6 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         const isExist = await User.findOne({identify_number: identify_number,_id: {$ne: req.params.id}})
         if(isExist) return res.status(406).json({success: false, message: 'Khách hàng đã tồn tại ùi !'})
-
-        const customer = await Customer.findOne({_id: req.params.id}).populate('userinfo')
 
         let updatedCustomer = {
             address: address?.trim(),
@@ -121,16 +118,13 @@ router.delete('/:id', verifyToken, async (req, res) => {
     }
 
     try {
-        const customerDeleteCondition = { _id: req.params.id }
-        const deletedCustomer = await Customer.findOneAndDelete(customerDeleteCondition).populate('userinfo')
-        const customerUser = await User.findOneAndDelete({_id: deletedCustomer.userinfo._id})
+        const customerUser = await User.findOneAndDelete({_id: req.params.id})
         // User not authorised or customer not found
         if (!customerUser)
             return res.status(401).json({
                 success: false,
                 message: 'Không tìm thấy khách hàng'
             })
-
         res.json({ success: true, post: customerUser })
     } catch (error) {
 

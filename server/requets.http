@@ -11,8 +11,8 @@ POST http://localhost:5000/api/auth/admin/login
 Content-Type:  application/json
 
 {
-  "username": "adminwms",
-  "password": "pwd1234"
+  "username": "adminhung",
+  "password": "123456"
 }
 
 ###

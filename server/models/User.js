@@ -38,7 +38,8 @@ const UserSchema = new Schema({
         type: String
     },
     email: String,
-    gender: String
+    gender: String,
+    party_ordered: Number
 })
 
 module.exports = mongoose.model('users', UserSchema)

@@ -5,11 +5,11 @@ const BookingRecordSchema = new Schema({
     host: {
         brides: {
             name: String,
-            born_date: String
+            birthday: String
         },
         groom: {
             name: String,
-            born_date: String
+            birthday: String
         }
     },
     lounge: {
