@@ -602,6 +602,8 @@ const TabMenu = () => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
                                     // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
+                                    // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, soup: dishesMap, price: menuTotal({...prev, soup: dishesMap})};
                                 })
@@ -617,6 +619,8 @@ const TabMenu = () => {
                             (e, data) => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
+                                    // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
                                     // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, salad: dishesMap, price: menuTotal({...prev, salad: dishesMap})};
@@ -634,6 +638,8 @@ const TabMenu = () => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
                                     // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
+                                    // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, main: dishesMap, price: menuTotal({...prev, main: dishesMap})};
                                 })
@@ -650,8 +656,10 @@ const TabMenu = () => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
                                     // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
+
+                                    // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
-                                    console.log(dishesMap)
                                     return {
                                         ...prev,
                                         dessert: dishesMap,
@@ -670,6 +678,8 @@ const TabMenu = () => {
                             (e, data) => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
+                                    // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
                                     // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, other: dishesMap, price: menuTotal({...prev, other: dishesMap})};

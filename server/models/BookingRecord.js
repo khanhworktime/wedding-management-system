@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const BookingRecordSchema = new Schema({
     host: {
-        brides: {
+        bride: {
             name: String,
             birthday: String
         },
@@ -12,42 +12,33 @@ const BookingRecordSchema = new Schema({
             birthday: String
         }
     },
-    lounge: {
-        type: Schema.Types.ObjectId,
-        ref: 'lounges'
-    },
-    menu:{
-        type: Schema.Types.ObjectId,
-        ref: 'menus'
-    },
+    loungeId: String,
+    menuId: String,
     services:[{
-        type: Schema.Types.ObjectId,
-        ref: 'services'
+        _id: String
     }],
     state: {
         type: String,
         enum: ["init", "confirmed", "processing", "finished", "cancel"]
     },
     wed_date: String,
-    guest_amount: String,
-    customer : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'customers'
+    shift: {
+        type:String,
+        enum: ['Sáng', 'Chiều']
     },
-    contract: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'bookingContracts'
-    },
-    bill: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'bookingBills'
-    },
-    deposite: [
+    guest_amount: Number,
+    customerId : String,
+    contractId: String,
+    billId: String,
+    deposites: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'bookingDeposits'
+            _id: String
         }
-    ]
+    ],
+    create_at: {
+        type: Date,
+        default: Date.now()
+    }
 
 })
 module.exports = mongoose.model('bookingRecords', BookingRecordSchema)

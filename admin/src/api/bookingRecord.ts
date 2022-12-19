@@ -9,19 +9,27 @@ import {setBookingRecord} from "../store/reducers/bookingRecord";
 import IBookingRecord from "../interface/IBookingRecord";
 
 function getAllBookingRecord() {
-    const getAll = () => axios.get("/booking_record", {
-        baseURL: API_NAME
+    const getAll = () => axios.get("/bookingRecords", {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
     })
 
     getAll().then(res => {
-        store.dispatch(setBookingRecord(res.data));
+        store.dispatch(setBookingRecord(res.data.bookingRecords));
     })
 }
 
 async function addBookingRecord(bookingRecord: IBookingRecord) {
 
-    const addRecord = () => axios.post("/booking_record", {...bookingRecord}, {
-        baseURL: API_NAME.concat("/api")
+    const addRecord = () => axios.post("/bookingRecords", {...bookingRecord}, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
     })
 
     await toast.promise(addRecord, {
@@ -30,7 +38,7 @@ async function addBookingRecord(bookingRecord: IBookingRecord) {
         error: {
             render({data}){
                 // @ts-ignore
-                return data.message;
+                return data.response.data.message;
             }
         }
     })
@@ -40,10 +48,11 @@ async function addBookingRecord(bookingRecord: IBookingRecord) {
 
 async function confirmBookingRecord(bookingRecord: IBookingRecord) {
 
-    const addRecord = () => axios.patch("/booking_record",{...bookingRecord, confirmed: true}, {
+    const addRecord = () => axios.patch("/bookingRecords",{...bookingRecord, requestConfirm: true}, {
         baseURL: API_NAME.concat("/api"),
-        params: {
-            id: bookingRecord.id
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
         }
     })
 
@@ -53,7 +62,7 @@ async function confirmBookingRecord(bookingRecord: IBookingRecord) {
         error: {
             render({data}){
                 // @ts-ignore
-                return data.message;
+                return data.response.data.message;
             }
         }
     })
@@ -61,4 +70,58 @@ async function confirmBookingRecord(bookingRecord: IBookingRecord) {
     getAllBookingRecord()
 }
 
-export {getAllBookingRecord, addBookingRecord};
+async function deleteRecord(id: string) {
+
+    const deleteRecords = () => axios.delete("/bookingRecords/" + id, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    return await toast.promise(deleteRecords, {
+        pending: 'Đang xử lý...',
+        success: {
+            render(){
+                return 'Đã xóa thành công'
+            },
+
+        },
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+}
+
+async function updateRecord(id: string | undefined, record: IBookingRecord){
+
+    const updateRecord = () => axios.put("/bookingRecords/" + id,{...record}, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    return await toast.promise(updateRecord, {
+        pending: 'Đang xử lý...',
+        success: {
+            render(){
+                return 'Đã cập nhật thành công'
+            },
+
+        },
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+}
+
+export {getAllBookingRecord, addBookingRecord, confirmBookingRecord, deleteRecord, updateRecord};

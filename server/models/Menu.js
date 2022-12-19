@@ -19,8 +19,7 @@ const MenuSchema = new Schema({
     soup: [{
         type: Schema.Types.Mixed,
         default: {}
-    }]
-    ,
+    }],
     salad: [{
         type: Schema.Types.Mixed,
         default: {}

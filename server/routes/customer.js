@@ -15,7 +15,7 @@ const omit = require("../utils/omitProp")
 // @access Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        let customers = await Customer.find().populate('userinfo');
+        let customers = await User.find({role: 'customer'});
         return res.json({ success: true, customers })
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Lỗi xử lý server' })

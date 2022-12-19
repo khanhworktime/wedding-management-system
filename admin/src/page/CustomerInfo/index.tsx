@@ -5,17 +5,25 @@ import {addNewCustomer, deleteCustomer, getAllCustomer, updateCustomer} from "..
 import ICustomer, {initCustomer} from "../../interface/ICustomer";
 import StateConvert from "../../utils/StateConvert";
 import CustomModal from "../../components/CustomModal";
+import {setPage} from "../../store/reducers/page";
+import store from "../../store";
 
 //TODO: add new customer
 
 const CustomerInfo = () => {
 
     const [openModal, setOpenModal] = useState(false);
+
+    useEffect(()=>{
+        store.dispatch(setPage('customers'))
+    })
+
     const [customers, setCustomers] = useState([])
     const [reFetch, requestRefetch] = useState(false)
     useEffect(() => {
         getAllCustomer().then(customers => setCustomers(customers))
     }, [reFetch])
+
     const [editCustomer, setEditCustomer] = useState(initCustomer)
 
     const [confirmModal, setOpenConfirm] = useState({state: false, customerId: ""})
@@ -29,7 +37,7 @@ const CustomerInfo = () => {
                     <Modal.Header>Xóa khách hàng ?</Modal.Header>
                     <Modal.Content>Khách hàng sẽ được xóa !?</Modal.Content>
                     <Modal.Actions>
-                        <Button primary onClick={() => setOpenConfirm({state: false, customerId: ""})}>Không</Button>
+                        <Button onClick={() => setOpenConfirm({state: false, customerId: ""})}>Không</Button>
                         <Button negative onClick={() => {
                             deleteCustomer(confirmModal.customerId).then(r => {
                                     setOpenConfirm({state: false, customerId: ""})
@@ -96,7 +104,7 @@ const CustomerInfo = () => {
                                     requestRefetch(prev => !prev)
                                 })
                             }
-                        }}>{isEdit ? "Cập nhật":"Thêm mới"}</Button>
+                        }}>{isEdit ? "Cập nhật" : "Thêm mới"}</Button>
                     </div>
                 </div>
             </CustomModal>}
@@ -104,9 +112,10 @@ const CustomerInfo = () => {
             <h1 className="text-2xl font-bold mt-0">Khách hàng</h1>
             <div onClick={()=> {
                 setEditCustomer(initCustomer)
+                setEdit(false)
                 setOpenModal(true)
             }} className="flex items-center absolute right-6 top-6 bg-cyan-200 p-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all cursor-pointer"><BsPlus/> Thêm khách hàng</div>
-            <table className="w-full table-auto h-fit border-collapse relative">
+            <table className="table-auto h-fit border-collapse relative">
                 <thead>
                     <tr>
                         <th className="p-2 border-slate-500 bg-slate-400 text-white whitespace-nowrap text-left break-all">Mã KH</th>
@@ -125,17 +134,17 @@ const CustomerInfo = () => {
                     customers.map((customer: any)=>{
                         return (
                         <tr className="hover:bg-cyan-200 even:bg-cyan-100 transition-colors cursor-pointer">
-                            <td className="max-w-[100px] break-all py-4 px-2 font-semibold">{customer.userinfo._id}</td>
-                            <td className="py-4 px-2">{customer.userinfo.name}</td>
-                            <td className="py-4 px-2 max-w-[20px] break-all">{customer.userinfo.identify_number}</td>
-                            <td className="py-4 px-2 max-w-[100px] break-all">{customer.userinfo.address}</td>
-                            <td className="py-4 px-2">{customer.userinfo.email}</td>
-                            <td className="py-4 px-2">{(new Date(customer.userinfo.birthday)).toDateString()}</td>
-                            <td className="py-4 px-2">{customer.userinfo.party_ordered}</td>
-                            <td className="py-4 px-2">{<StateConvert state={customer.userinfo.state}/>}</td>
+                            <td className="max-w-[100px] break-all py-4 px-2 font-semibold">{customer._id}</td>
+                            <td className="py-4 px-2">{customer?.name}</td>
+                            <td className="py-4 px-2 max-w-[20px] break-all">{customer?.identify_number}</td>
+                            <td className="py-4 px-2 max-w-[100px] break-all">{customer?.address}</td>
+                            <td className="py-4 px-2">{customer?.email}</td>
+                            <td className="py-4 px-2">{(new Date(customer.birthday)).toDateString()}</td>
+                            <td className="py-4 px-2">{customer?.party_ordered}</td>
+                            <td className="py-4 px-2">{<StateConvert state={customer?.state}/>}</td>
                             <td className="py-4 px-2 flex gap-4">
                                 <Button onClick={()=>{
-                                    setEditCustomer(customer.userinfo)
+                                    setEditCustomer(customer)
                                     setEdit(true)
                                     setOpenModal(true)
                                 }
