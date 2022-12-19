@@ -32,8 +32,8 @@ const Page = () => {
     return (
         <div className="bg-cyan-100 flex min-w-screen min-h-screen">
             {/*Navbar*/}
-            <div className="w-[250px]"></div>
-            <div className="p-8 fixed top-0 left-0 rounded-lg min-w-fit h-full bg-white">
+            <div className="w-[300px]"></div>
+            <div className="p-8 fixed top-0 left-0 rounded-lg min-w-fit h-full bg-white z-[1000]">
                 <img className="mb-8 w-full" src={Logo} alt={""}/>
                 <ul className="text-indigo-800">
                     <li onClick={()=> {navigate("/");dispatch(setPage("dashboard"))}} className={currentPage === "dashboard" ? activeClass : "cursor-pointer px-4 py-2 hover:bg-indigo-50 rounded-lg"+ " transition-all"}>Trang chủ</li>
@@ -63,7 +63,7 @@ const Page = () => {
             </div>
 
         {/* Page content */}
-            <div className="p-8 flex-grow">
+            <div className="p-8 flex-grow w-full overflow-scroll">
                 <Routes>
                     <Route path="" element={<Dashboard/>}/>
                     <Route path="report" element={<Report/>}/>

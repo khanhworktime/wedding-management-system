@@ -2,7 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const BookingDepositeSchema = new Schema({
+    for: String,
     amount : Number,
-    deposite_state: String,
+    pay_method : String,
+    create_at : {
+        type: Date,
+        default: Date.now()
+    }
 })
 module.exports = mongoose.model('bookingDeposites', BookingDepositeSchema)

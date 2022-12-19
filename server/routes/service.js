@@ -50,7 +50,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     const {price,description,state,name, type} = req.body
 
     // Simple validation
-    const user = await User.findOne({_id: req.userId})
+    const user = await User.findOne({_id: req.userId })
     if (user.role !== 'admin') {
         return res.status(403).json({success: false, message: 'Không có quyền truy cập'})
     }
@@ -58,7 +58,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (formatString.test(name)) return res.status(406).json ({success: false, message: 'Tên không được chứa kí tự đặc biệt !'})
 
     try {
-        const isExist = await Service.findOne({name: name})
+        const isExist = await Service.findOne({name: name, _id: {$ne: req.params.id}})
         if(isExist) return res.status(406).json({success: false, message: 'Dịch vụ đã tồn tại ùi !'})
 
         let updateService = {

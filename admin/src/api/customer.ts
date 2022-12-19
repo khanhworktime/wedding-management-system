@@ -86,7 +86,7 @@ async function updateCustomer(id: string | undefined, customer: ICustomer){
         pending: 'Đang xử lý...',
         success: {
             render(){
-                return 'Đã xóa thành công'
+                return 'Đã cập nhật thành công'
             },
 
         },

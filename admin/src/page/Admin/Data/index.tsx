@@ -323,9 +323,6 @@ const TabService = () => {
     const [currentService, chooseService] = useState((services.length > 0) ? services[0] : initService);
     const [editMode, setEditMode] = useState(false)
 
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     return <Tab.Pane>
         <Transition visible={confirmModal.state} animation='scale' duration={200}>
             <Modal dimmer="blurring" size={"tiny"} open={confirmModal.state}
@@ -525,7 +522,6 @@ const TabMenu = () => {
 
     const [confirmModal, setOpenConfirm] = useState({state: false, menuId: ""})
 
-    const [activeIndex, setActiveIndex] = useState(-1);
 
     const formErrValidate = formErr.nameErr
     const formValidate = () => {
@@ -550,6 +546,8 @@ const TabMenu = () => {
     }
 
     const [currentMenu, chooseMenu] = useState((menus.length > 0) ? menus[0] : initMenu);
+
+    const [activeIndex, setActiveIndex] = useState(-1);
     const [editMode, setEditMode] = useState(false)
 
     return <Tab.Pane>
@@ -602,6 +600,8 @@ const TabMenu = () => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
                                     // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
+                                    // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, soup: dishesMap, price: menuTotal({...prev, soup: dishesMap})};
                                 })
@@ -617,6 +617,8 @@ const TabMenu = () => {
                             (e, data) => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
+                                    // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
                                     // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, salad: dishesMap, price: menuTotal({...prev, salad: dishesMap})};
@@ -634,6 +636,8 @@ const TabMenu = () => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
                                     // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
+                                    // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, main: dishesMap, price: menuTotal({...prev, main: dishesMap})};
                                 })
@@ -650,8 +654,10 @@ const TabMenu = () => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
                                     // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
+
+                                    // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
-                                    console.log(dishesMap)
                                     return {
                                         ...prev,
                                         dessert: dishesMap,
@@ -670,6 +676,8 @@ const TabMenu = () => {
                             (e, data) => {
                                 setNewMenu((prev: any) => {
                                     const temp = data?.value || "";
+                                    // @ts-ignore
+                                    if (data?.value.length > 4) return {...prev}
                                     // @ts-ignore
                                     const dishesMap = dishes.filter((dish: IDish) => temp.includes(dish._id))
                                     return {...prev, other: dishesMap, price: menuTotal({...prev, other: dishesMap})};

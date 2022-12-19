@@ -1,22 +1,45 @@
+
 export default interface IBookingRecord {
-    id?: string;
-    customer: {
-        id?:string;
-        name:string,
-        phone_number: string,
-        email:string
-    },
+    _id?: string;
+    customerId: string,
     host: {
         bride: {
             name: string,
-            born_year: string
+            birthday: string
         },
         groom: {
             name: string,
-            born_year: string
+            birthday: string
         }
     },
-    lounge: string,
+    services?: [
+        string
+    ],
+    loungeId: string,
     wed_date: string,
-    guest_amount?: string
+    guest_amount?: string,
+    shift: string,
+    create_at?: string,
+    menuId?: string,
+    state: 'init' | 'confirmed' | 'contract confirmed' | 'deposited' | 'paid' | 'processing' | 'finished' | 'cancel',
+    contractId?: string,
+    depositeId?: string
+}
+
+export const initRecord:IBookingRecord = {
+    customerId: '',
+    host: {
+        bride: {
+            name: '',
+            birthday: ''
+        },
+        groom: {
+            name: '',
+            birthday: ''
+        }
+    },
+    loungeId: '',
+    wed_date: '',
+    shift: 'Sáng',
+    state: 'init'
 }
