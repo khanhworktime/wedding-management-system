@@ -5,6 +5,7 @@ const BookingDepositeSchema = new Schema({
     for: String,
     amount : Number,
     pay_method : String,
+    content: String,
     create_at : {
         type: Date,
         default: Date.now()

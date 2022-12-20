@@ -23,7 +23,13 @@ export default interface IBookingRecord {
     menuId?: string,
     state: 'init' | 'confirmed' | 'contract confirmed' | 'deposited' | 'paid' | 'processing' | 'finished' | 'cancel',
     contractId?: string,
-    depositeId?: string
+    depositePayment? : 'banking' | 'cash',
+    depositeContent?: string,
+    depositeAmount?: Number,
+    checkoutPayment? : 'banking' | 'cash',
+    checkoutContent?: string,
+    checkoutAmount?: Number,
+    totalIn? : Number,
 }
 
 export const initRecord:IBookingRecord = {

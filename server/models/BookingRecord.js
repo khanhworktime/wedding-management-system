@@ -33,6 +33,7 @@ const BookingRecordSchema = new Schema({
             _id: String
         }
     ],
+    totalIn: Number,
     create_at: {
         type: Date,
         default: Date.now()

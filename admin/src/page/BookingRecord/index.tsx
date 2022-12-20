@@ -12,7 +12,8 @@ import ILounge from "../../interface/ILounge";
 import {getAllLounge} from "../../api/lounge";
 import IBookingRecord, {initRecord} from "../../interface/IBookingRecord";
 import {
-    addBookingRecord, cancelBookingContract, cancelBookingRecord, confirmBookingContract,
+    addBookingDeposite,
+    addBookingRecord, cancelBookingContract, cancelBookingRecord, checkoutRecord, confirmBookingContract,
     confirmBookingRecord,
     deleteRecord,
     getAllBookingRecord,
@@ -61,7 +62,7 @@ const SaleDeal = () => {
     }
 
     const loungesOpt = ()=>{
-        return lounges.map((lounge:ILounge) => ({
+        return lounges.filter((lounge:ILounge) => lounge.state === 'available').map((lounge:ILounge) => ({
             text: lounge.name,
             value: lounge._id
         }))
@@ -96,10 +97,8 @@ const SaleDeal = () => {
     const [confirmContract, setConfirmContract] = useState(false)
     const [cancelContract, setCancelContract] = useState(false)
     const [deposite, setDepositeContract] = useState(false)
+    const [checkout, setCheckout] = useState(false)
 
-    const [depositeRecord, setDepositeRecord] = useState({
-
-    })
     return (
         <>
             {confirmModal.state &&
@@ -171,7 +170,7 @@ const SaleDeal = () => {
                     <Modal.Actions>
                         <Button onClick={() => setConfirmContract(false)}>Không</Button>
                         <Button positive onClick={() => {
-                            confirmBookingContract(currentRecord.record).then(r => {
+                            confirmBookingContract({...currentRecord.record, totalIn: total()}).then(r => {
                                     setCurrentRecord({state: false, record: initRecord});
                                     setConfirmContract(false)
                                     requestRefetch(prev => !prev)
@@ -186,27 +185,7 @@ const SaleDeal = () => {
             <Transition visible={cancelContract} animation='scale' duration={200}>
                 <Modal dimmer="blurring" size={"tiny"} open={cancelContract}
                        onClose={() => setCancelContract(false)}>
-                    <Modal.Header>Xác nhận đã ký hợp đồng này ?</Modal.Header>
-                    <Modal.Content>Thao tác này không thể làm lại!</Modal.Content>
-                    <Modal.Actions>
-                        <Button onClick={() => setCancelContract(false)}>Không</Button>
-                        <Button positive onClick={() => {
-                            cancelBookingContract(currentRecord.record).then(r => {
-                                    setCurrentRecord({state: false, record: initRecord});
-                                setCancelContract(false)
-                                    requestRefetch(prev => !prev)
-                                }
-                            )
-                        }}>Xác nhận</Button>
-                    </Modal.Actions>
-                </Modal>
-            </Transition>}
-
-            {cancelContract &&
-            <Transition visible={cancelContract} animation='scale' duration={200}>
-                <Modal dimmer="blurring" size={"tiny"} open={cancelContract}
-                       onClose={() => setCancelContract(false)}>
-                    <Modal.Header>Xác nhận đã ký hợp đồng này ?</Modal.Header>
+                    <Modal.Header>Xác nhận hủy bỏ hợp đồng này ?</Modal.Header>
                     <Modal.Content>Thao tác này không thể làm lại!</Modal.Content>
                     <Modal.Actions>
                         <Button onClick={() => setCancelContract(false)}>Không</Button>
@@ -480,21 +459,39 @@ const SaleDeal = () => {
                 <div>
                     <div className="flex flex-col gap-2 mb-4">
                         <label>Thanh toán bằng ?</label>
-                        <Dropdown fluid/>
+                        <Dropdown value={editRecord.depositePayment} options={[{
+                            text: 'Tiền mặt',
+                            value: 'cash'
+                        }, {
+                            text: 'Chuyển khoản',
+                            value: 'banking'
+                        }]} onChange={(e, data) => {
+                            // @ts-ignore
+                            setEditRecord((prev) => ({...prev, depositePayment: data.value}))
+                        }
+                        } fluid selection/>
                     </div>
                     <div className="flex flex-col gap-2 mb-4">
                         <label>Số tiền cọc</label>
-                        <Input fluid/>
+                        <Input value={(total()/2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND"} fluid disabled/>
                     </div>
+                    {editRecord.depositePayment === 'banking' &&
+                        <div className="flex flex-col gap-2 mb-4">
+                            <label>Mã số chuyển khoản</label>
+                            <Input value={editRecord.depositeContent} onChange={(e, data) => setEditRecord((prev) => ({
+                                ...prev,
+                                depositeContent: data.value
+                            }))} fluid/>
+                        </div>}
                     <div className="flex w-full gap-4 justify-end">
                         <Button onClick={()=> {
                             setDepositeContract(false)
                         }} >Hủy</Button>
                         <Button onClick={(e)=> {
                             e.preventDefault();
-                            updateRecord(editRecord._id, editRecord).then(() =>{
+                            addBookingDeposite({...editRecord, depositeAmount: total()*0.5}).then(() =>{
                                     setDepositeContract(false)
-                                    setCurrentRecord({state: true, record: editRecord});
+                                    setCurrentRecord({state: false, record: initRecord});
                                     setEditRecord(initRecord)
                                     requestRefetch(prev => !prev);
                                 }
@@ -503,6 +500,54 @@ const SaleDeal = () => {
                     </div>
                 </div>
             </CustomModal>}
+            {checkout && <CustomModal showHandler={setCheckout}>
+                <h2 className="font-semibold mb-4">Thanh toán số còn lại</h2>
+                <div>
+                    <div className="flex flex-col gap-2 mb-4">
+                        <label>Thanh toán bằng ?</label>
+                        <Dropdown value={editRecord.checkoutPayment} options={[{
+                            text: 'Tiền mặt',
+                            value: 'cash'
+                        }, {
+                            text: 'Chuyển khoản',
+                            value: 'banking'
+                        }]} onChange={(e, data) => {
+                            // @ts-ignore
+                            setEditRecord((prev) => ({...prev, checkoutPayment: data.value}))
+                        }
+                        } fluid selection/>
+                    </div>
+                    <div className="flex flex-col gap-2 mb-4">
+                        <label>Số tiền cần thanh toán</label>
+                        <Input value={(total()/2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND"} fluid disabled/>
+                    </div>
+                    {editRecord.checkoutPayment === 'banking' &&
+                        <div className="flex flex-col gap-2 mb-4">
+                            <label>Mã số chuyển khoản</label>
+                            <Input value={editRecord.checkoutContent} onChange={(e, data) => setEditRecord((prev) => ({
+                                ...prev,
+                                checkoutContent: data.value
+                            }))} fluid/>
+                        </div>}
+                    <div className="flex w-full gap-4 justify-end">
+                        <Button onClick={()=> {
+                            setCheckout(false)
+                        }} >Hủy</Button>
+                        <Button onClick={(e)=> {
+                            e.preventDefault();
+                            checkoutRecord({...editRecord, checkoutAmount: total()*0.5}).then(() =>{
+                                    setCheckout(false)
+                                    setCurrentRecord({state: false, record: initRecord});
+                                    setEditRecord(initRecord)
+                                    requestRefetch(prev => !prev);
+                                }
+                            )
+                        }} primary>Xác nhận</Button>
+                    </div>
+                </div>
+            </CustomModal>}
+
+
             <h1 className="text-2xl font-bold">Đơn đặt tiệc</h1>
             <p className="mb-6">Hiện có : {records?.length} đơn đặt tiệc</p>
             <div onClick={()=> {
@@ -602,7 +647,7 @@ const SaleDeal = () => {
                                         setOpenService(true)
                                     }}>Cập nhật danh sách dịch vụ</Button>
 
-                                    {(currentRecord.record.state === 'init') &&
+                                    {(currentRecord.record.state === 'init' && currentRecord.record.menuId) &&
                                         <Button color="green" onClick={() => {
                                         setConfirmRecord(true)
                                     }}>Xác nhận đặt</Button>}
@@ -614,11 +659,13 @@ const SaleDeal = () => {
                                     }</>}
 
                                     {(currentRecord.record.state === "contract confirmed") && <><Button color="green" onClick={() => {
+                                        setEditRecord(currentRecord.record)
                                         setDepositeContract(true)
                                     }}>Đặt cọc</Button></>}
 
                                     {(currentRecord.record.state === "deposited") && <><Button color="green" onClick={() => {
-                                        setDepositeContract(true)
+                                        setEditRecord(currentRecord.record)
+                                        setCheckout(true)
                                     }}>Thanh toán toàn bộ</Button></>}
 
                                     {currentRecord.record.state === "contract confirmed" && <><Button negative onClick={() => {
@@ -632,7 +679,8 @@ const SaleDeal = () => {
                                     setEditRecord(currentRecord.record);
                                     setOpenModal(true)
                                 }}>Sửa thông tin</Button>}
-                                {currentRecord.record.state === 'init' && <Button onClick={() => setOpenConfirm({
+                                {currentRecord.record.state === 'init' &&
+                                    <Button onClick={() => setOpenConfirm({
                                     state: true,
                                     recordId: currentRecord.record._id || ""
                                 })}
@@ -644,7 +692,7 @@ const SaleDeal = () => {
                                         color="blue">In hợp đồng</Button>
                                 }
 
-                                {currentRecord.record.state === 'confirmed' &&
+                                {(currentRecord.record.state === 'confirmed' || currentRecord.record.state === 'deposited') &&
                                     <Button onClick={() => {
                                         setConfirmCancel(true)
                                         requestRefetch(prev => !prev)

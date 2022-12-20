@@ -81,7 +81,12 @@ async function cancelBookingRecord(bookingRecord: IBookingRecord) {
 
     await toast.promise(addRecord, {
         pending: 'Đang xử lý...',
-        success: 'Đã hủy tiệc 👌',
+        success: {
+            render({data}){
+                //@ts-ignore
+                return data?.data.message
+            }
+        },
         error: {
             render({data}){
                 // @ts-ignore
@@ -138,9 +143,9 @@ async function cancelBookingContract(bookingRecord: IBookingRecord) {
 
     getAllBookingRecord()
 }
-async function addBookingContract(bookingRecord: IBookingRecord) {
+async function addBookingDeposite(bookingRecord: IBookingRecord) {
 
-    const addRecord = () => axios.put("/bookingRecords/" + bookingRecord._id,{...bookingRecord, option: {requestDeposite: true}}, {
+    const addBookingDeposite = () => axios.put("/bookingRecords/" + bookingRecord._id,{...bookingRecord, option: {requestDeposite: true}}, {
         baseURL: API_NAME.concat("/api"),
         headers: {
             ['ngrok-skip-browser-warning']:"1",
@@ -148,9 +153,32 @@ async function addBookingContract(bookingRecord: IBookingRecord) {
         }
     })
 
-    await toast.promise(addRecord, {
+    await toast.promise(addBookingDeposite, {
         pending: 'Đang xử lý...',
         success: 'Đã cọc gồi 👌',
+        error: {
+            render({data}){
+                // @ts-ignore
+                return data.response.data.message;
+            }
+        }
+    })
+
+    getAllBookingRecord()
+}
+async function checkoutRecord(bookingRecord: IBookingRecord) {
+
+    const checkoutRecord = () => axios.put("/bookingRecords/" + bookingRecord._id,{...bookingRecord, option: {requestCheckout: true}}, {
+        baseURL: API_NAME.concat("/api"),
+        headers: {
+            ['ngrok-skip-browser-warning']:"1",
+            authorization: "Bearer " + localStorage.getItem("accessToken")
+        }
+    })
+
+    await toast.promise(checkoutRecord, {
+        pending: 'Đang xử lý...',
+        success: 'Đã thanh toán 👌',
         error: {
             render({data}){
                 // @ts-ignore
@@ -216,4 +244,4 @@ async function updateRecord(id: string | undefined, record: IBookingRecord){
     })
 }
 
-export {getAllBookingRecord, addBookingRecord, confirmBookingRecord, cancelBookingContract, deleteRecord, updateRecord, cancelBookingRecord, confirmBookingContract};
+export {getAllBookingRecord, addBookingDeposite, checkoutRecord, addBookingRecord, confirmBookingRecord, cancelBookingContract, deleteRecord, updateRecord, cancelBookingRecord, confirmBookingContract};

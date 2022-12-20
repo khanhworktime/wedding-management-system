@@ -7,6 +7,9 @@ const Lounge = require("../models/Lounge");
 const BookingContract = require('../models/BookingContract')
 const calculateAge = require('../utils/calcAge')
 const BookingDeposite = require('../models/BookingDeposite')
+const BookingBill = require('../models/BookingBill')
+const {SchemaType} = require("mongoose");
+const Menu = require("../models/Menu")
 
 // @route GET api/bookingRecords
 // @desc Get bookingRecord
@@ -87,7 +90,7 @@ router.post('/', verifyToken, async (req,res) =>{
 // @desc Update bookingRecord
 // @access Private
 router.put('/:id', verifyToken, async (req, res) => {
-    const { host, loungeId, menuId, services, wed_date, guest_amount, shift, state} = req.body
+    const { host, loungeId, menuId, services, wed_date, guest_amount, shift, totalIn, state} = req.body
 
     let requestConfirm, requestCancel, requestCheckout, requestConfirmContract, requestCancelContract, requestDeposite
 
@@ -103,6 +106,80 @@ router.put('/:id', verifyToken, async (req, res) => {
         if (Object.hasOwn(req.body.option, 'requestCancelContract')) requestCancelContract = req.body.option.requestCancelContract
 
         if (Object.hasOwn(req.body.option, 'requestDeposite')) requestDeposite = req.body.option.requestDeposite
+
+        if (Object.hasOwn(req.body.option, 'requestCheckout')) requestCheckout = req.body.option.requestCheckout
+    }
+
+    const dateDiff = (date1, date2) => {
+        const difference_In_Time = date2.getTime() - date1.getTime();
+        return difference_In_Time / (1000 * 3600 * 24);
+    }
+
+    let record;
+    if (requestConfirm)
+    {
+        const newContract = new BookingContract({
+            validate_number : req.params.id,
+            contract_state : 'init'
+        })
+        await newContract.save()
+        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'confirmed'})
+        return res.json ({success: true, message: 'Xác nhận thành công', record})
+    }
+
+    if (requestCancel){
+        record = await BookingRecord.findOne({_id: req.params.id})
+        if (record.state === 'confirmed') {
+            record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'cancel'})
+            return res.json({success: true, message: 'Đã hủy đặt tiệc', record})
+        } else if (record.state === 'deposited') {
+            //@TODO Xử lý hủy tiệc
+
+            const dateD = dateDiff(new Date(), new Date(record.wed_date))
+            record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'cancel', totalIn: (dateD < 15) ? totalIn :  totalIn / 2})
+            return res.json({success: true, message: 'Hủy đặt tiệc, trả lại 50% tiền cọc do hủy trước 15 ngày', record: req.body})
+        }
+    }
+    if (requestConfirmContract){
+        const newContract = BookingContract.findOneAndUpdate({validate_number: req.params.id, state: 'init'}, {state: 'confirmed'})
+        console.log(totalIn)
+        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'contract confirmed', totalIn: totalIn})
+        return res.json ({success: true, message: 'Xác nhận thành công', record})
+    }
+    if (requestCancelContract){
+        const newContract = BookingContract.findOneAndUpdate({validate_number: req.params.id, state: 'confirmed'}, {state: 'cancel'})
+
+        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'confirmed'})
+        return res.json ({success: true, message: 'Hủy thành công', record})
+    }
+
+    if (requestDeposite) {
+        let {depositeContent, depositePayment, depositeAmount} = req.body
+        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'deposited'})
+        const newDeposite = new BookingDeposite({
+            for: req.params.id,
+            amount: depositeAmount,
+            pay_method: depositePayment,
+            content: depositeContent
+        })
+        await newDeposite.save()
+        return res.json ({success: true, message: 'Cọc thành công', record})
+    }
+
+    if (requestCheckout) {
+        let {checkoutContent, checkoutPayment, checkoutAmount} = req.body
+        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'paid'})
+        const menu = await Menu.find({_id: menuId})
+
+        const newBill = new BookingBill({
+            for: req.params.id,
+            price_per_table: menu.price,
+            pay_method: checkoutPayment,
+            amount: checkoutAmount,
+            content: checkoutContent
+        })
+        await newBill.save()
+        return res.json ({success: true, message: 'Thanh toán thành công', record})
     }
 
     if (req.user.role !== 'admin') return res.status(406).json({ success: false, message: 'Không có quyền truy cập'})
@@ -129,10 +206,6 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (!loungeId) return res.status(406).json ({success: false, message: 'Chưa chọn sảnh cưới'})
     if (await countBookingLounges(loungeId, wed_date) === 1) return res.status(406).json ({success: false, message: `Ngày ${wed_date} đã có khách đặt sảnh` })
     if (await countBookingRecords(wed_date) >= 5) return res.status(406).json ({success: false, message: `Ngày ${wed_date} không còn sảnh, tối đa 5 sảnh hoạt động 1 ngày` })
-    const dateDiff = (date1, date2) => {
-        const difference_In_Time = date2.getTime() - date1.getTime();
-        return difference_In_Time / (1000 * 3600 * 24);
-    }
 
     const lounge = await Lounge.findOne({_id: loungeId})
 
@@ -143,48 +216,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (dateDiff(new Date(), new Date(wed_date)) > 365) return res.status(406).json ({success: false, message: 'Chỉ được đặt trước tối đa 90 ngày!'})
 
     // Simple validation
-    let record;
-    if (requestConfirm)
-    {
-        const newContract = new BookingContract({
-            validate_number : req.params.id,
-            contract_state : 'init'
-        })
-        await newContract.save()
-        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'confirmed'})
-        return res.json ({success: true, message: 'Xác nhận thành công', record})
-    }
 
-    if (requestCancel){
-        record = await BookingRecord.findOne({_id: req.params.id})
-        if (record.state === 'confirmed') {
-            record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'cancel'})
-            return res.json({success: true, message: 'Đã hủy đặt tiệc', record})
-        } else {
-            //@TODO Xử lý hủy tiệc
-            return res.json({success: true, message: 'Hủy đặt tiệc', record: req.body})
-        }
-    }
-    if (requestConfirmContract){
-        const newContract = BookingContract.findOneAndUpdate({validate_number: req.params.id, state: 'init'}, {state: 'confirmed'})
-
-        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'contract confirmed'})
-        return res.json ({success: true, message: 'Xác nhận thành công', record})
-    }
-    if (requestCancelContract){
-        const newContract = BookingContract.findOneAndUpdate({validate_number: req.params.id, state: 'confirmed'}, {state: 'cancel'})
-
-        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'confirmed'})
-        return res.json ({success: true, message: 'Hủy thành công', record})
-    }
-
-    if (requestDeposite) {
-        record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'deposited'})
-        const newDeposite = new BookingDeposite({
-            for: req.params.id
-        })
-        return res.json ({success: true, message: 'Cọc thành công', record})
-    }
 
     try {
 
