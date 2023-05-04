@@ -13,6 +13,6 @@ Với mục đích xây dựng một hệ thống quản lí tiệc cưới vớ
 TechStack : ReactJS, NodeJS, ExpressJS, MongoDB, Figma, StarUML
 
 Một số hình ảnh được xây dựng :
-!{Trang đăng nhập Khách hàng](https://res.cloudinary.com/du0sz12nf/image/upload/v1683209121/Personal%20Stubs/WeddingManagementSystem/zgob8bfnzevuqbalnwqx.png)
+![Trang đăng nhập Khách hàng](https://res.cloudinary.com/du0sz12nf/image/upload/v1683209121/Personal%20Stubs/WeddingManagementSystem/zgob8bfnzevuqbalnwqx.png)
 ![Trang chủ Web đặt hàng](https://res.cloudinary.com/du0sz12nf/image/upload/v1683209459/Personal%20Stubs/WeddingManagementSystem/cwuxp9vne6yvfhcdxx4z.png)
 ![Trang quản lí tiệc cưới](https://res.cloudinary.com/du0sz12nf/image/upload/v1683209121/Personal%20Stubs/WeddingManagementSystem/stkdfewz965wzion16hk.png)
