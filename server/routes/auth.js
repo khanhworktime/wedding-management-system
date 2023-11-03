@@ -10,7 +10,7 @@ const  jwt = require('jsonwebtoken')
 // @access Public
 router.post('/register', async (req, res)=>{
     const {username, password, role} = req.body
-
+    console.log({username, password})
     // Simple validation
     if (!username || !password)
         return res.status(400).json({success: false, message:'Sai tài khoản hoặc mật khẩu'})

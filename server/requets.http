@@ -1,9 +1,11 @@
+###
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "minmin1234",
-  "password": "minmin"
+  "username": "admin",
+  "password": "Admin@123",
+  "role" : "admin"
 }
 
 ###

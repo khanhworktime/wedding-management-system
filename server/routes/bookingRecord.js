@@ -142,7 +142,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
     if (requestConfirmContract){
         const newContract = BookingContract.findOneAndUpdate({validate_number: req.params.id, state: 'init'}, {state: 'confirmed'})
-        console.log(totalIn)
+        console.log(totalIn) 
         record = await BookingRecord.findOneAndUpdate({_id: req.params.id}, {state: 'contract confirmed', totalIn: totalIn})
         return res.json ({success: true, message: 'Xác nhận thành công', record})
     }
